@@ -1,16 +1,35 @@
-# This is a sample Python script.
+import os
+import arcade
 
-# Press Maj+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import matplotlib
+import matplotlib.pyplot as plt
+
+import Consts
+from Agent import Agent
+from Environment import Environment
+from MazeWindow import MazeWindow
+
+matplotlib.use('TkAgg')
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def extract_history(history):
+    plt.plot(history)
+    plt.show()
 
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    env = Environment(Consts.MAZE, False)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    agent = Agent(env)
+    if os.path.exists(Consts.FILE_AGENT):
+        agent.load(Consts.FILE_AGENT)
+
+    windows = MazeWindow(agent)
+    windows.setup()
+    arcade.run()
+
+    agent.save(Consts.FILE_AGENT)
+
+    print(agent.score)
+
+    plt.plot(agent.history)
+    plt.show()
