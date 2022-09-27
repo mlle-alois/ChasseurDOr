@@ -2,61 +2,91 @@ import Consts
 
 
 class Environment:
-    def __init__(self, str_maze, brickwalls):
-        self.__parse(str_maze)
+    def __init__(self, str_map):
+        self.__parse(str_map)
         self.__nb_states = len(self.__states)
-        self.__brickwalls = brickwalls
 
-    def __parse(self, str_maze):
+    def __parse(self, str_map):
         self.__states = {}
-        for row, line in enumerate(str_maze.strip().splitlines()):
+        for row, line in enumerate(str_map.strip().splitlines()):
             for col, char in enumerate(line):
-                if char == Consts.MAZE_START:
-                    self.__start = (row, col)
-                elif char == Consts.MAZE_GOAL:
-                    self.__goal = (row, col)
-                self.__states[(row, col)] = char
+                if char == Consts.MAP_START:
+                    self.__start = (row, col, Consts.PICKAXE)
+                elif char == Consts.TREASURE:
+                    self.__treasure = (row, col, Consts.PICKAXE)
+                self.__states[(row, col, Consts.PICKAXE)] = char
 
+        # TODO enlever ????
         self.__rows = row + 1
         self.__cols = col + 1
 
     def is_forbidden_state(self, state):
-        if self.__brickwalls:
-            return state not in self.__states \
-                   or self.is_extern_wall(state) or self.is_intern_wall(state) or self.is_start(state)
         return state not in self.__states \
-               or self.is_extern_wall(state) or self.is_start(state)
+               or self.is_wall(state) or self.is_river(state)
 
-    def is_extern_wall(self, state):
-        return self.__states[state] == Consts.EXTERN_MAZE_WALL
+    def is_wall(self, state):
+        return self.__states[state] == Consts.MAP_WALL
 
-    def is_intern_wall(self, state):
-        return self.__states[state] == Consts.INTERN_MAZE_WALLS
+    def is_river(self, state):
+        return self.__states[state] == Consts.RIVER
 
     def is_start(self, state):
-        return self.__states[state] == Consts.MAZE_START
+        return self.__states[state] == Consts.MAP_START
 
-    def is_goal(self, state):
-        return self.__states[state] == Consts.MAZE_GOAL
+    def is_treasure(self, state):
+        return self.__states[state] == Consts.TREASURE
+
+    def is_obstacle(self, state):
+        return self.__states[state] == Consts.ROCK or self.__states[state] == Consts.LOG
+
+    def is_log(self, state):
+        return self.__states[state] == Consts.LOG
+
+    def is_rock(self, state):
+        return self.__states[state] == Consts.ROCK
+
+    def is_good_tool(self, state, tool):
+        return (self.is_log(state) and tool == Consts.AXE) or (self.is_rock(state) and tool == Consts.PICKAXE)
 
     def do(self, state, action):
+        print(action)
         move = Consts.ACTION_MOVES[action]
-        new_state = (state[0] + move[0], state[1] + move[1])
+        tool = move[2] if move[2] != 0 else state[2]
+        new_state = (state[0] + move[0], state[1] + move[1], tool)
         reward = Consts.REWARD_DEFAULT
 
         if self.is_forbidden_state(new_state):
             reward = -2 * self.__nb_states
-        elif self.is_intern_wall(new_state):
-            state = new_state
-            reward = -2 * self.__nb_states
+        elif self.is_obstacle(new_state):
+            if self.is_good_tool(new_state, tool):
+                self.remove_obstacle(new_state)
+                state = new_state
+            else:
+                reward = -2
+        # TODO WOLVES, MORT, PV
         else:
             state = new_state
-            if self.__states[state] == Consts.MAZE_GOAL:
-                reward = self.__nb_states
+            if self.__states[state] == Consts.TREASURE:
+                reward = 3 * self.__nb_states
 
         return reward, state
 
+    def remove_obstacle(self, state):
+        map_list = Consts.MAP.split('\n')
+        for i, ligne_string in enumerate(map_list):
+            map_list[i] = list(ligne_string)
+
+        map_list[state[0] + 1][state[1]] = ' '
+
+        for i, ligne_string in enumerate(map_list):
+            map_list[i] = ''.join(map_list[i])
+        Consts.MAP = '\n'.join(map_list)
+
+        
+        # TODO supprimer l'obstacle en front
+
     def print(self, agent):
+        # TODO APRES
         res = ''
         for row in range(self.__rows):
             for col in range(self.__cols):
@@ -73,8 +103,8 @@ class Environment:
         return self.__start
 
     @property
-    def goal(self):
-        return self.__goal
+    def treasure(self):
+        return self.__treasure
 
     @property
     def states(self):

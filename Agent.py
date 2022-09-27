@@ -3,7 +3,7 @@ import Consts
 from random import *
 
 class Agent:
-    def __init__(self, env, alpha=1, gamma=1, exploration=0, cooling_rate=0.9999):
+    def __init__(self, env, alpha=1, gamma=1, exploration=0, cooling_rate=0.9):
         self.__env = env
         self.reset(False)
         self.__init_qtable()
@@ -51,7 +51,7 @@ class Agent:
     def learn(self, iterations):
         for i in range(iterations):
             self.reset()
-            while self.state != self.__env.goal:
+            while self.state != self.__env.treasure:
                 self.step()
 
     def save(self, filename):

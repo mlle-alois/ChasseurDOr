@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import Consts
 from Agent import Agent
 from Environment import Environment
-from MazeWindow import MazeWindow
+from MapWindow import MapWindow
 
 matplotlib.use('TkAgg')
 
@@ -17,13 +17,14 @@ def extract_history(history):
     plt.show()
 
 if __name__ == '__main__':
-    env = Environment(Consts.MAZE, False)
+    env = Environment(Consts.MAP)
 
     agent = Agent(env)
+    # agent.learn(200)
     if os.path.exists(Consts.FILE_AGENT):
         agent.load(Consts.FILE_AGENT)
 
-    windows = MazeWindow(agent)
+    windows = MapWindow(agent)
     windows.setup()
     arcade.run()
 
