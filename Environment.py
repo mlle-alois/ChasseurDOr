@@ -49,7 +49,7 @@ class Environment:
         return (self.is_log(state) and tool == Consts.AXE) or (self.is_rock(state) and tool == Consts.PICKAXE)
 
     def do(self, state, action):
-        print(action)
+        # print(action)
         move = Consts.ACTION_MOVES[action]
         tool = move[2] if move[2] != 0 else state[2]
         new_state = (state[0] + move[0], state[1] + move[1], tool)
@@ -81,9 +81,6 @@ class Environment:
         for i, ligne_string in enumerate(map_list):
             map_list[i] = ''.join(map_list[i])
         Consts.MAP = '\n'.join(map_list)
-
-        
-        # TODO supprimer l'obstacle en front
 
     def print(self, agent):
         # TODO APRES

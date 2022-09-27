@@ -52,8 +52,6 @@ class MapWindow(arcade.Window):
                (self.__agent.environment.height - state[0] - 0.5) * Consts.SPRITE_SIZE
 
     def on_draw(self):
-        # TODO Voir si'il faut rajouter self.__rock_sprites.draw()
-        # Le but c'est d'enlever les rocks
         arcade.start_render()
         self.__walls.draw()
         self.__rock_sprites.draw()
@@ -64,8 +62,8 @@ class MapWindow(arcade.Window):
                          10, 10, arcade.csscolor.WHITE, 20)
 
     def new_game(self):
+        self.setup()
         self.__agent.reset()
-        self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(self.__agent.state)
         self.__iteration += 1
 
     def on_update(self, delta_time):
@@ -78,7 +76,7 @@ class MapWindow(arcade.Window):
             self.__rock_sprites.update()
 
             # Generate a list of all sprites that collided with the player.
-            hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.__rock_sprites)
+            hit_list = arcade.check_for_collision_with_list(self.__adventurer, self.__rock_sprites)
 
             # Loop through each colliding sprite, remove it, and add to the score.
             for rock in hit_list:
