@@ -1,9 +1,0 @@
-# Default ignored files
-/shelf/
-/workspace.xml
-# Datasource local storage ignored files
-/../../../../../../../../:\Users\alois\Documents\5AL\Apprentissage par renforcement appliqué au jeu\ChasseurDOr\.idea/dataSources/
-/dataSources.local.xml
-# Editor-based HTTP Client requests
-/httpRequests/
-/venv/
