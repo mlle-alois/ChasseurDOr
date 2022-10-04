@@ -14,7 +14,7 @@ class Environment:
                 if char == Consts.MAP_START:
                     self.__start = (row, col, Consts.PICKAXE)
                 elif char == Consts.TREASURE:
-                    self.__treasure = (row, col, Consts.PICKAXE)
+                    self.__treasure = (row, col)
 
                 for tool in Consts.AXE, Consts.PICKAXE, Consts.SWORD:
                     self.__states[(row, col, tool)] = char
@@ -27,6 +27,9 @@ class Environment:
         return state not in self.__states \
                or self.is_wall(state) or self.is_river(state)
 
+    def is_treasure(self, state):
+        return (state[0], state[1]) == self.__treasure
+
     def is_wall(self, state):
         return self.__states[state] == Consts.MAP_WALL
 
@@ -35,9 +38,6 @@ class Environment:
 
     def is_start(self, state):
         return self.__states[state] == Consts.MAP_START
-
-    def is_treasure(self, state):
-        return self.__states[state] == Consts.TREASURE
 
     def is_obstacle(self, state):
         return self.__states[state] == Consts.ROCK or self.__states[state] == Consts.LOG
@@ -48,8 +48,8 @@ class Environment:
     def is_rock(self, state):
         return self.__states[state] == Consts.ROCK
 
-    def is_wolf(self, state):
-        return self.__states[state] == Consts.WOLF
+    def is_bee(self, state):
+        return self.__states[state] == Consts.BEE
 
     #TODO déplacer dans Agent
     def is_dead(self, state):
@@ -58,17 +58,12 @@ class Environment:
     def is_good_tool(self, state, tool):
         return (self.is_log(state) and tool == Consts.AXE) or \
             (self.is_rock(state) and tool == Consts.PICKAXE) or \
-            (self.is_wolf(state) and tool == Consts.SWORD)
+            (self.is_bee(state) and tool == Consts.SWORD)
 
     def do(self, state, action):
-        print("action :" + action)
         move = Consts.ACTION_MOVES[action]
-        print("move :" + str(move))
         tool = move[2] if move[2] != 0 else state[2]
-        print("state", state)
-        print("outil :" + tool)
         new_state = (state[0] + move[0], state[1] + move[1], tool)
-        print("New state : ", new_state)
         reward = Consts.REWARD_DEFAULT
 
         if self.is_forbidden_state(new_state):
@@ -79,7 +74,7 @@ class Environment:
                 state = new_state
             else:
                 reward = -2
-        elif self.is_wolf(new_state):
+        elif self.is_bee(new_state):
             state = new_state
             if self.is_good_tool(new_state, tool):
                 self.attack(new_state)

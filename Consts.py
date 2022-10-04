@@ -1,14 +1,14 @@
 MAP = """
 #########################
-#.L R    W      R       #
-#LL   RRRRR     M    RRR#
-#L       MMM    M       #
-#RR     M   M  M  RR    #
-#     MM  R  MM   MM    #
-# L   M    W    RM   LLL#
-# R  M           M  LLRR#
-#         R  RR M   LR  #
-#   RRRR        M   LR $#
+#.L R LL B      R       #
+#LL   RRRRRLLL  MLLLLRRR#
+#L  LL   MMM    M LLLL  #
+#RR LLLLM   M  M  RR    #
+#     MM  R  MM   MMRRRR#
+# L LLM L  BLL  RM    LL#
+# R LM    LLL    MRRRLLL#
+#     LLL R  RR M   LL  #
+#   RRRR   LLL  M   LL $#
 #########################
 """
 
@@ -18,7 +18,7 @@ MAP_WALL = '#'
 RIVER = 'M'
 ROCK = 'R'
 LOG = 'L'
-WOLF = 'W'
+BEE = 'B'
 SWORD = 'S'
 PICKAXE = 'P'
 AXE = 'A'

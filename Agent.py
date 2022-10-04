@@ -53,7 +53,7 @@ class Agent:
     def learn(self, iterations):
         for i in range(iterations):
             self.reset()
-            while self.state != self.__env.treasure:
+            while not self.__env.is_treasure(self.state):
                 self.step()
 
     def save(self, filename):

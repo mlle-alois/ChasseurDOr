@@ -26,11 +26,11 @@ class MapWindow(arcade.Window):
                 sprite = arcade.Sprite(":resources:images/tiles/stone.png", 0.25)
 
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
-                #self.__walls.append(sprite)
+                # self.__walls.append(sprite)
                 self.__obstacles_sprites.append(sprite)
 
             elif self.__agent.environment.is_log(state):
-                sprite = arcade.Sprite(":resources:images/topdown_tanks/treeBrown_large.png", 0.25)
+                sprite = arcade.Sprite(":resources:images/topdown_tanks/treeBrown_large.png", 0.5)
 
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
                 self.__obstacles_sprites.append(sprite)
@@ -38,7 +38,7 @@ class MapWindow(arcade.Window):
                 sprite = arcade.Sprite(":resources:images/tiles/water.png", 0.25)
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
                 self.__walls.append(sprite)
-            elif self.__agent.environment.is_wolf(state):
+            elif self.__agent.environment.is_bee(state):
                 sprite = arcade.Sprite(":resources:images/enemies/bee.png", 0.25)
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
                 self.__walls.append(sprite)
@@ -61,8 +61,16 @@ class MapWindow(arcade.Window):
         self.__goal.draw()
         self.__adventurer.draw()
 
-        arcade.draw_text(f"#{self.__iteration} Score : {self.__agent.score} T°C : {self.__agent.exploration} Tool : {self.__agent.state[2]} Life : {self.__agent.environment.pv}",
-                         10, 10, arcade.csscolor.WHITE, 20)
+        if self.__agent.state[2] == Consts.AXE:
+            tool = 'Axe'
+        elif self.__agent.state[2] == Consts.PICKAXE:
+            tool = 'Pickaxe'
+        else:
+            tool = 'Sword'
+
+        arcade.draw_text(
+            f"#{self.__iteration} Score : {self.__agent.score} T°C : {self.__agent.exploration} Tool : {tool} PV : {self.__agent.environment.pv}",
+            10, 10, arcade.csscolor.WHITE, 20)
 
     def new_game(self):
         self.setup()
@@ -71,8 +79,7 @@ class MapWindow(arcade.Window):
 
     def on_update(self, delta_time):
         if self.__agent.environment.is_dead(self.__agent.state) or \
-            self.__agent.state == self.__agent.environment.treasure:
-            print("New game")
+                self.__agent.environment.is_treasure(self.__agent.state):
             self.new_game()
         else:
             action, reward = self.__agent.step()
