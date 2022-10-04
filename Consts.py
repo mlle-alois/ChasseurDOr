@@ -1,14 +1,14 @@
 MAP = """
 #########################
-#.  R           R       #
-#     RRRRR     M    RRR#
-#        MMM    M       #
+#.L R           R       #
+#LL   RRRRR     M    RRR#
+#L       MMM    M       #
 #RR     M   M  M  RR    #
 #     MM  R  MM   MM    #
-#     M         RM      #
-# R  M           M    RR#
-#         R  RR M    R  #
-#   RRRR        M    R $#
+# L   M         RM   LLL#
+# R  M           M  LLRR#
+#         R  RR M   LR  #
+#   RRRR        M   LR $#
 #########################
 """
 

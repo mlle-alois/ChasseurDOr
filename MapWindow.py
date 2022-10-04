@@ -9,7 +9,7 @@ class MapWindow(arcade.Window):
                          agent.environment.height * Consts.SPRITE_SIZE,
                          'Gold Digger')
 
-        self.__rock_sprites = arcade.SpriteList()
+        self.__obstacles_sprites = arcade.SpriteList()
         self.__agent = agent
         self.__iteration = 1
 
@@ -27,13 +27,13 @@ class MapWindow(arcade.Window):
 
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
                 #self.__walls.append(sprite)
-                self.__rock_sprites.append(sprite)
+                self.__obstacles_sprites.append(sprite)
 
             elif self.__agent.environment.is_log(state):
                 sprite = arcade.Sprite(":resources:images/topdown_tanks/treeBrown_large.png", 0.25)
 
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
-                self.__walls.append(sprite)
+                self.__obstacles_sprites.append(sprite)
             elif self.__agent.environment.is_river(state):
                 sprite = arcade.Sprite(":resources:images/tiles/water.png", 0.25)
 
@@ -54,7 +54,7 @@ class MapWindow(arcade.Window):
     def on_draw(self):
         arcade.start_render()
         self.__walls.draw()
-        self.__rock_sprites.draw()
+        self.__obstacles_sprites.draw()
         self.__goal.draw()
         self.__adventurer.draw()
 
@@ -73,10 +73,10 @@ class MapWindow(arcade.Window):
             self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(self.__agent.state)
             # Call update on all sprites (The sprites don't do much in this
             # example though.)
-            self.__rock_sprites.update()
+            self.__obstacles_sprites.update()
 
             # Generate a list of all sprites that collided with the player.
-            hit_list = arcade.check_for_collision_with_list(self.__adventurer, self.__rock_sprites)
+            hit_list = arcade.check_for_collision_with_list(self.__adventurer, self.__obstacles_sprites)
 
             # Loop through each colliding sprite, remove it, and add to the score.
             for rock in hit_list:

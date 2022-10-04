@@ -14,9 +14,11 @@ class Environment:
                     self.__start = (row, col, Consts.PICKAXE)
                 elif char == Consts.TREASURE:
                     self.__treasure = (row, col, Consts.PICKAXE)
-                self.__states[(row, col, Consts.PICKAXE)] = char
 
-        # TODO enlever ????
+                for tool in Consts.AXE, Consts.PICKAXE, Consts.SWORD:
+                    self.__states[(row, col, tool)] = char
+
+
         self.__rows = row + 1
         self.__cols = col + 1
 
@@ -49,10 +51,14 @@ class Environment:
         return (self.is_log(state) and tool == Consts.AXE) or (self.is_rock(state) and tool == Consts.PICKAXE)
 
     def do(self, state, action):
-        # print(action)
+        print("action :" + action)
         move = Consts.ACTION_MOVES[action]
+        print("move :" + str(move))
         tool = move[2] if move[2] != 0 else state[2]
+        print("state", state)
+        print("outil :" + tool)
         new_state = (state[0] + move[0], state[1] + move[1], tool)
+        print("New state : ", new_state)
         reward = Consts.REWARD_DEFAULT
 
         if self.is_forbidden_state(new_state):
