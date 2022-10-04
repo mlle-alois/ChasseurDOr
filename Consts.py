@@ -1,11 +1,11 @@
 MAP = """
 #########################
-#.L R           R       #
+#.L R    W      R       #
 #LL   RRRRR     M    RRR#
 #L       MMM    M       #
 #RR     M   M  M  RR    #
 #     MM  R  MM   MM    #
-# L   M         RM   LLL#
+# L   M    W    RM   LLL#
 # R  M           M  LLRR#
 #         R  RR M   LR  #
 #   RRRR        M   LR $#
@@ -19,7 +19,7 @@ RIVER = 'M'
 ROCK = 'R'
 LOG = 'L'
 WOLF = 'W'
-SWORD = 'G'
+SWORD = 'S'
 PICKAXE = 'P'
 AXE = 'A'
 

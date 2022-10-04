@@ -36,7 +36,10 @@ class MapWindow(arcade.Window):
                 self.__obstacles_sprites.append(sprite)
             elif self.__agent.environment.is_river(state):
                 sprite = arcade.Sprite(":resources:images/tiles/water.png", 0.25)
-
+                sprite.center_x, sprite.center_y = self.state_to_xy(state)
+                self.__walls.append(sprite)
+            elif self.__agent.environment.is_wolf(state):
+                sprite = arcade.Sprite(":resources:images/enemies/bee.png", 0.25)
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
                 self.__walls.append(sprite)
 
@@ -58,7 +61,7 @@ class MapWindow(arcade.Window):
         self.__goal.draw()
         self.__adventurer.draw()
 
-        arcade.draw_text(f"#{self.__iteration} Score : {self.__agent.score} T°C : {self.__agent.exploration}",
+        arcade.draw_text(f"#{self.__iteration} Score : {self.__agent.score} T°C : {self.__agent.exploration} Tool : {self.__agent.state[2]} Life : {self.__agent.environment.pv}",
                          10, 10, arcade.csscolor.WHITE, 20)
 
     def new_game(self):
@@ -67,8 +70,11 @@ class MapWindow(arcade.Window):
         self.__iteration += 1
 
     def on_update(self, delta_time):
-
-        if self.__agent.state != self.__agent.environment.treasure:
+        if self.__agent.environment.is_dead(self.__agent.state) or \
+            self.__agent.state == self.__agent.environment.treasure:
+            print("New game")
+            self.new_game()
+        else:
             action, reward = self.__agent.step()
             self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(self.__agent.state)
             # Call update on all sprites (The sprites don't do much in this
@@ -81,8 +87,6 @@ class MapWindow(arcade.Window):
             # Loop through each colliding sprite, remove it, and add to the score.
             for rock in hit_list:
                 rock.remove_from_sprite_lists()
-        else:
-            self.new_game()
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.R:

@@ -5,6 +5,7 @@ class Environment:
     def __init__(self, str_map):
         self.__parse(str_map)
         self.__nb_states = len(self.__states)
+        self.__lifePoints = 5 # TODO déplacer dans l'agent
 
     def __parse(self, str_map):
         self.__states = {}
@@ -47,8 +48,17 @@ class Environment:
     def is_rock(self, state):
         return self.__states[state] == Consts.ROCK
 
+    def is_wolf(self, state):
+        return self.__states[state] == Consts.WOLF
+
+    #TODO déplacer dans Agent
+    def is_dead(self, state):
+        return self.__lifePoints == 0
+
     def is_good_tool(self, state, tool):
-        return (self.is_log(state) and tool == Consts.AXE) or (self.is_rock(state) and tool == Consts.PICKAXE)
+        return (self.is_log(state) and tool == Consts.AXE) or \
+            (self.is_rock(state) and tool == Consts.PICKAXE) or \
+            (self.is_wolf(state) and tool == Consts.SWORD)
 
     def do(self, state, action):
         print("action :" + action)
@@ -69,7 +79,14 @@ class Environment:
                 state = new_state
             else:
                 reward = -2
-        # TODO WOLVES, MORT, PV
+        elif self.is_wolf(new_state):
+            state = new_state
+            if self.is_good_tool(new_state, tool):
+                self.attack(new_state)
+            else:
+                # self.agent.pv -= 1
+                self.__lifePoints -=1
+                reward = -3 * self.__nb_states
         else:
             state = new_state
             if self.__states[state] == Consts.TREASURE:
@@ -87,6 +104,12 @@ class Environment:
         for i, ligne_string in enumerate(map_list):
             map_list[i] = ''.join(map_list[i])
         Consts.MAP = '\n'.join(map_list)
+
+    def attack(self, state):
+        self.remove_obstacle(state)
+    
+    def resetPv(self):
+        self.__lifePoints = 5
 
     def print(self, agent):
         # TODO APRES
@@ -120,3 +143,7 @@ class Environment:
     @property
     def width(self):
         return self.__cols
+    
+    @property
+    def pv(self):
+        return self.__lifePoints
