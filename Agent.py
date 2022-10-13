@@ -3,7 +3,7 @@ import Consts
 from random import *
 
 class Agent:
-    def __init__(self, env, alpha=1, gamma=0.9, exploration=0, cooling_rate=0.9):
+    def __init__(self, env, alpha=1, gamma=0.9, exploration=0, cooling_rate=0.1):
         self.__env = env
         self.reset(False)
         self.__init_qtable()

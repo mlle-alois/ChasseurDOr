@@ -16,7 +16,7 @@ class Environment:
                 elif char == Consts.TREASURE:
                     self.__treasure = (row, col)
 
-                for tool in Consts.AXE, Consts.PICKAXE, Consts.SWORD:
+                for tool in Consts.PICKAXE, Consts.SWORD:
                     self.__states[(row, col, tool)] = char
 
 
@@ -56,11 +56,11 @@ class Environment:
         return self.__lifePoints == 0
 
     def is_good_tool(self, state, tool):
-        return (self.is_log(state) and tool == Consts.AXE) or \
-            (self.is_rock(state) and tool == Consts.PICKAXE) or \
+        return (self.is_rock(state) and tool == Consts.PICKAXE) or \
             (self.is_bee(state) and tool == Consts.SWORD)
 
     def do(self, state, action):
+        print(action)
         move = Consts.ACTION_MOVES[action]
         tool = move[2] if move[2] != 0 else state[2]
         new_state = (state[0] + move[0], state[1] + move[1], tool)
@@ -105,19 +105,6 @@ class Environment:
     
     def resetPv(self):
         self.__lifePoints = 5
-
-    def print(self, agent):
-        # TODO APRES
-        res = ''
-        for row in range(self.__rows):
-            for col in range(self.__cols):
-                state = (row, col)
-                if state == agent.state:
-                    res += 'A'
-                else:
-                    res += self.__states[state]
-            res += '\n'
-        print(res)
 
     @property
     def start(self):

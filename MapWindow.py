@@ -9,7 +9,8 @@ class MapWindow(arcade.Window):
                          agent.environment.height * Consts.SPRITE_SIZE,
                          'Gold Digger')
 
-        self.__obstacles_sprites = arcade.SpriteList()
+        self.__rock_sprites = arcade.SpriteList()
+        self.__log_sprites = arcade.SpriteList()
         self.__agent = agent
         self.__iteration = 1
         arcade.Window.background_color = arcade.color.AMAZON
@@ -27,13 +28,14 @@ class MapWindow(arcade.Window):
                 sprite = arcade.Sprite(":resources:images/tiles/stone.png", 0.25)
 
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
-                self.__obstacles_sprites.append(sprite)
+                self.__rock_sprites.append(sprite)
 
             elif self.__agent.environment.is_log(state):
                 sprite = arcade.Sprite(":resources:images/topdown_tanks/treeBrown_large.png", 0.5)
 
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
-                self.__obstacles_sprites.append(sprite)
+                self.__log_sprites.append(sprite)
+
             elif self.__agent.environment.is_river(state):
                 sprite = arcade.Sprite(":resources:images/tiles/water.png", 0.25)
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
@@ -54,10 +56,6 @@ class MapWindow(arcade.Window):
             ":resources:images/tiles/bomb.png", 0.1)
         self.__pickaxe.center_x, self.__pickaxe.center_y = self.state_to_xy_tool(self.__agent.state)
 
-        self.__axe = arcade.Sprite(
-            ":resources:images/tiles/torch1.png", 0.2)
-        self.__axe.center_x, self.__axe.center_y = self.state_to_xy_tool(self.__agent.state)
-
         self.__sword = arcade.Sprite(
             ":resources:gui_basic_assets/items/sword_gold.png", 0.3)
         self.__sword.center_x, self.__sword.center_y = self.state_to_xy_tool(self.__agent.state)
@@ -73,14 +71,12 @@ class MapWindow(arcade.Window):
     def on_draw(self):
         arcade.start_render()
         self.__walls.draw()
-        self.__obstacles_sprites.draw()
+        self.__rock_sprites.draw()
+        self.__log_sprites.draw()
         self.__goal.draw()
         self.__adventurer.draw()
 
-        if self.__agent.state[2] == Consts.AXE:
-            tool = 'Axe'
-            self.__axe.draw()
-        elif self.__agent.state[2] == Consts.PICKAXE:
+        if self.__agent.state[2] == Consts.PICKAXE:
             tool = 'Pickaxe'
             self.__pickaxe.draw()
         else:
@@ -104,14 +100,13 @@ class MapWindow(arcade.Window):
             action, reward = self.__agent.step()
             self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(self.__agent.state)
             self.__sword.center_x, self.__sword.center_y = self.state_to_xy_tool(self.__agent.state)
-            self.__axe.center_x, self.__axe.center_y = self.state_to_xy_tool(self.__agent.state)
             self.__pickaxe.center_x, self.__pickaxe.center_y = self.state_to_xy_tool(self.__agent.state)
             # Call update on all sprites (The sprites don't do much in this
             # example though.)
-            self.__obstacles_sprites.update()
+            self.__rock_sprites.update()
 
             # Generate a list of all sprites that collided with the player.
-            hit_list = arcade.check_for_collision_with_list(self.__adventurer, self.__obstacles_sprites)
+            hit_list = arcade.check_for_collision_with_list(self.__adventurer, self.__rock_sprites)
 
             # Loop through each colliding sprite, remove it, and add to the score.
             for rock in hit_list:
