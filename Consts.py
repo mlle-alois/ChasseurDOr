@@ -1,12 +1,12 @@
 MAP = """
 #########################
-#.  R LL B      R       #
+#.  RLL  B      R       #
 #LL   RRRRRLLL  MLLLLRRR#
 #L  LL   MMM    M LLLL  #
 #RR LLLLM   M  M  RR    #
 #     MM  R  MM   MMRRRR#
-# L LLM L  BLL  RM    LL#
-# R LM    LLL    MRRRRRL#
+# L LLM L  B  LLRM    LL#
+# R LM    LLLLL  MRRRRRL#
 #     LLL R  RR M   LL  #
 #   RRRR   LLL  M   LL $#
 #########################
@@ -44,3 +44,6 @@ REWARD_DEFAULT = -1
 SPRITE_SIZE = 32
 
 FILE_AGENT = 'agent.golddigger'
+
+BEE_SPEED = 1.0
+BEE_INTERVAL = 50

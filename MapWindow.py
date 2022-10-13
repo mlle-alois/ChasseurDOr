@@ -1,6 +1,7 @@
 import arcade
 
 import Consts
+from bee import Bee
 
 
 class MapWindow(arcade.Window):
@@ -14,9 +15,11 @@ class MapWindow(arcade.Window):
         self.__agent = agent
         self.__iteration = 1
         arcade.Window.background_color = arcade.color.AMAZON
+        self.__bee_list = None
 
     def setup(self):
         self.__walls = arcade.SpriteList()
+        self.__bee_list = arcade.SpriteList()
 
         for state in self.__agent.environment.states:
             if self.__agent.environment.is_wall(state):
@@ -41,9 +44,10 @@ class MapWindow(arcade.Window):
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
                 self.__walls.append(sprite)
             elif self.__agent.environment.is_bee(state):
-                sprite = arcade.Sprite(":resources:images/enemies/bee.png", 0.25)
+                sprite = Bee(":resources:images/enemies/bee.png",
+                             0.25)
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
-                self.__walls.append(sprite)
+                self.__bee_list.append(sprite)
 
         self.__goal = arcade.Sprite("pictures/tresor.png", 0.07)
         self.__goal.center_x, self.__goal.center_y = self.state_to_xy(self.__agent.environment.treasure)
@@ -75,6 +79,7 @@ class MapWindow(arcade.Window):
         self.__log_sprites.draw()
         self.__goal.draw()
         self.__adventurer.draw()
+        self.__bee_list.draw()
 
         if self.__agent.state[2] == Consts.PICKAXE:
             tool = 'Pickaxe'
@@ -104,6 +109,7 @@ class MapWindow(arcade.Window):
             # Call update on all sprites (The sprites don't do much in this
             # example though.)
             self.__rock_sprites.update()
+            self.__bee_list.update()
 
             # Generate a list of all sprites that collided with the player.
             hit_list = arcade.check_for_collision_with_list(self.__adventurer, self.__rock_sprites)

@@ -20,7 +20,7 @@ if __name__ == '__main__':
     env = Environment(Consts.MAP)
 
     agent = Agent(env)
-    agent.learn(50)
+    agent.learn(0)
     if os.path.exists(Consts.FILE_AGENT):
         agent.load(Consts.FILE_AGENT)
 
