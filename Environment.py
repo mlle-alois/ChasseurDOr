@@ -5,7 +5,7 @@ class Environment:
     def __init__(self, str_map):
         self.__parse(str_map)
         self.__nb_states = len(self.__states)
-        self.__lifePoints = 5  # TODO déplacer dans l'agent
+        self.lifePoints = 5  # TODO déplacer dans l'agent
 
     def __parse(self, str_map):
         self.__states = {}
@@ -51,8 +51,8 @@ class Environment:
         return self.__states[state] == Consts.BEE
 
     # TODO déplacer dans Agent
-    def is_dead(self, state):
-        return self.__lifePoints == 0
+    def is_dead(self):
+        return self.lifePoints == 0
 
     def is_good_tool(self, state, tool):
         return (self.is_rock(state) and tool == Consts.PICKAXE) or \
@@ -71,10 +71,10 @@ class Environment:
                 state = new_state
             else:
                 reward = -2
+        #TODO problème l'abeille est en mouvement, cette méthode n'est plus valable
         elif self.is_bee(new_state):
             state = new_state
             if not self.is_good_tool(new_state, tool):
-                self.__lifePoints -= 1
                 reward = -3 * self.__nb_states
         else:
             state = new_state
@@ -84,7 +84,7 @@ class Environment:
         return reward, state
 
     def resetPv(self):
-        self.__lifePoints = 5
+        self.lifePoints = 5
 
     @property
     def start(self):
@@ -108,4 +108,4 @@ class Environment:
 
     @property
     def pv(self):
-        return self.__lifePoints
+        return self.lifePoints

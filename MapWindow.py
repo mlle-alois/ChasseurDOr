@@ -82,14 +82,14 @@ class MapWindow(arcade.Window):
         self.__bee_list.draw()
 
         if self.__agent.state[2] == Consts.PICKAXE:
-            tool = 'Pickaxe'
+            self.__tool = 'Pickaxe'
             self.__pickaxe.draw()
         else:
-            tool = 'Sword'
+            self.__tool = 'Sword'
             self.__sword.draw()
 
         arcade.draw_text(
-            f"#{self.__iteration} Score : {self.__agent.score} T°C : {self.__agent.exploration} Tool : {tool} PV : {self.__agent.environment.pv}",
+            f"#{self.__iteration} Score : {self.__agent.score} T°C : {self.__agent.exploration} Tool : {self.__tool} PV : {self.__agent.environment.pv}",
             10, 10, arcade.csscolor.WHITE, 20)
 
     def new_game(self):
@@ -98,7 +98,7 @@ class MapWindow(arcade.Window):
         self.__iteration += 1
 
     def on_update(self, delta_time):
-        if self.__agent.environment.is_dead(self.__agent.state) or \
+        if self.__agent.environment.is_dead() or \
                 self.__agent.environment.is_treasure(self.__agent.state):
             self.new_game()
         else:
@@ -106,17 +106,19 @@ class MapWindow(arcade.Window):
             self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(self.__agent.state)
             self.__sword.center_x, self.__sword.center_y = self.state_to_xy_tool(self.__agent.state)
             self.__pickaxe.center_x, self.__pickaxe.center_y = self.state_to_xy_tool(self.__agent.state)
-            # Call update on all sprites (The sprites don't do much in this
-            # example though.)
             self.__rock_sprites.update()
             self.__bee_list.update()
 
-            # Generate a list of all sprites that collided with the player.
-            hit_list = arcade.check_for_collision_with_list(self.__adventurer, self.__rock_sprites)
+            hit_rock_list = arcade.check_for_collision_with_list(self.__adventurer, self.__rock_sprites)
+            hit_bee_list = arcade.check_for_collision_with_list(self.__adventurer, self.__bee_list)
 
-            # Loop through each colliding sprite, remove it, and add to the score.
-            for rock in hit_list:
+            for rock in hit_rock_list:
                 rock.remove_from_sprite_lists()
+            for bee in hit_bee_list:
+                if self.__tool == 'Sword':
+                    bee.remove_from_sprite_lists()
+                else:
+                    self.__agent.environment.lifePoints -= 1
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.R:
