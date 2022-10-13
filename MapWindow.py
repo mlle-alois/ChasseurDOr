@@ -79,16 +79,12 @@ class MapWindow(arcade.Window):
 
         if self.__agent.state[2] == Consts.AXE:
             tool = 'Axe'
+            self.__axe.draw()
         elif self.__agent.state[2] == Consts.PICKAXE:
             tool = 'Pickaxe'
-        else:
-            tool = 'Sword'
-
-        if tool == 'Axe':
-            self.__axe.draw()
-        elif tool == 'Pickaxe':
             self.__pickaxe.draw()
         else:
+            tool = 'Sword'
             self.__sword.draw()
 
         arcade.draw_text(
