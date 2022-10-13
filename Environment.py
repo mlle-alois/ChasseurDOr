@@ -5,7 +5,7 @@ class Environment:
     def __init__(self, str_map):
         self.__parse(str_map)
         self.__nb_states = len(self.__states)
-        self.__lifePoints = 5 # TODO déplacer dans l'agent
+        self.__lifePoints = 5  # TODO déplacer dans l'agent
 
     def __parse(self, str_map):
         self.__states = {}
@@ -18,7 +18,6 @@ class Environment:
 
                 for tool in Consts.PICKAXE, Consts.SWORD:
                     self.__states[(row, col, tool)] = char
-
 
         self.__rows = row + 1
         self.__cols = col + 1
@@ -51,16 +50,15 @@ class Environment:
     def is_bee(self, state):
         return self.__states[state] == Consts.BEE
 
-    #TODO déplacer dans Agent
+    # TODO déplacer dans Agent
     def is_dead(self, state):
         return self.__lifePoints == 0
 
     def is_good_tool(self, state, tool):
         return (self.is_rock(state) and tool == Consts.PICKAXE) or \
-            (self.is_bee(state) and tool == Consts.SWORD)
+               (self.is_bee(state) and tool == Consts.SWORD)
 
     def do(self, state, action):
-        print(action)
         move = Consts.ACTION_MOVES[action]
         tool = move[2] if move[2] != 0 else state[2]
         new_state = (state[0] + move[0], state[1] + move[1], tool)
@@ -70,17 +68,13 @@ class Environment:
             reward = -2 * self.__nb_states
         elif self.is_obstacle(new_state):
             if self.is_good_tool(new_state, tool):
-                self.remove_obstacle(new_state)
                 state = new_state
             else:
                 reward = -2
         elif self.is_bee(new_state):
             state = new_state
-            if self.is_good_tool(new_state, tool):
-                self.attack(new_state)
-            else:
-                # self.agent.pv -= 1
-                self.__lifePoints -=1
+            if not self.is_good_tool(new_state, tool):
+                self.__lifePoints -= 1
                 reward = -3 * self.__nb_states
         else:
             state = new_state
@@ -89,20 +83,6 @@ class Environment:
 
         return reward, state
 
-    def remove_obstacle(self, state):
-        map_list = Consts.MAP.split('\n')
-        for i, ligne_string in enumerate(map_list):
-            map_list[i] = list(ligne_string)
-
-        map_list[state[0] + 1][state[1]] = ' '
-
-        for i, ligne_string in enumerate(map_list):
-            map_list[i] = ''.join(map_list[i])
-        Consts.MAP = '\n'.join(map_list)
-
-    def attack(self, state):
-        self.remove_obstacle(state)
-    
     def resetPv(self):
         self.__lifePoints = 5
 
@@ -125,7 +105,7 @@ class Environment:
     @property
     def width(self):
         return self.__cols
-    
+
     @property
     def pv(self):
         return self.__lifePoints
