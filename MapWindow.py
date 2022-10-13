@@ -27,7 +27,6 @@ class MapWindow(arcade.Window):
                 sprite = arcade.Sprite(":resources:images/tiles/stone.png", 0.25)
 
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
-                # self.__walls.append(sprite)
                 self.__obstacles_sprites.append(sprite)
 
             elif self.__agent.environment.is_log(state):
@@ -51,9 +50,25 @@ class MapWindow(arcade.Window):
             ":resources:images/animated_characters/female_adventurer/femaleAdventurer_walk3.png", 0.3)
         self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(self.__agent.state)
 
+        self.__pickaxe = arcade.Sprite(
+            ":resources:images/tiles/bomb.png", 0.1)
+        self.__pickaxe.center_x, self.__pickaxe.center_y = self.state_to_xy_tool(self.__agent.state)
+
+        self.__axe = arcade.Sprite(
+            ":resources:images/tiles/torch1.png", 0.2)
+        self.__axe.center_x, self.__axe.center_y = self.state_to_xy_tool(self.__agent.state)
+
+        self.__sword = arcade.Sprite(
+            ":resources:gui_basic_assets/items/sword_gold.png", 0.3)
+        self.__sword.center_x, self.__sword.center_y = self.state_to_xy_tool(self.__agent.state)
+
     def state_to_xy(self, state):
         return (state[1] + 0.5) * Consts.SPRITE_SIZE, \
                (self.__agent.environment.height - state[0] - 0.5) * Consts.SPRITE_SIZE
+
+    def state_to_xy_tool(self, state):
+        return (state[1] + 0.9) * Consts.SPRITE_SIZE, \
+               (self.__agent.environment.height - state[0] - 0.7) * Consts.SPRITE_SIZE
 
     def on_draw(self):
         arcade.start_render()
@@ -68,6 +83,13 @@ class MapWindow(arcade.Window):
             tool = 'Pickaxe'
         else:
             tool = 'Sword'
+
+        if tool == 'Axe':
+            self.__axe.draw()
+        elif tool == 'Pickaxe':
+            self.__pickaxe.draw()
+        else:
+            self.__sword.draw()
 
         arcade.draw_text(
             f"#{self.__iteration} Score : {self.__agent.score} T°C : {self.__agent.exploration} Tool : {tool} PV : {self.__agent.environment.pv}",
@@ -85,6 +107,9 @@ class MapWindow(arcade.Window):
         else:
             action, reward = self.__agent.step()
             self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(self.__agent.state)
+            self.__sword.center_x, self.__sword.center_y = self.state_to_xy_tool(self.__agent.state)
+            self.__axe.center_x, self.__axe.center_y = self.state_to_xy_tool(self.__agent.state)
+            self.__pickaxe.center_x, self.__pickaxe.center_y = self.state_to_xy_tool(self.__agent.state)
             # Call update on all sprites (The sprites don't do much in this
             # example though.)
             self.__obstacles_sprites.update()
