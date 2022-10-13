@@ -25,13 +25,13 @@ class MapWindow(arcade.Window):
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
                 self.__walls.append(sprite)
             elif self.__agent.environment.is_rock(state):
-                sprite = arcade.Sprite(":resources:images/tiles/stone.png", 0.25)
+                sprite = arcade.Sprite(":resources:images/tiles/rock.png", 0.25)
 
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
                 self.__rock_sprites.append(sprite)
 
             elif self.__agent.environment.is_log(state):
-                sprite = arcade.Sprite(":resources:images/topdown_tanks/treeBrown_large.png", 0.5)
+                sprite = arcade.Sprite(":resources:images/tiles/boxCrate_single.png", 0.25)
 
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
                 self.__log_sprites.append(sprite)
@@ -45,7 +45,7 @@ class MapWindow(arcade.Window):
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
                 self.__walls.append(sprite)
 
-        self.__goal = arcade.Sprite(":resources:images/items/coinGold.png", 0.5)
+        self.__goal = arcade.Sprite("pictures/tresor.png", 0.07)
         self.__goal.center_x, self.__goal.center_y = self.state_to_xy(self.__agent.environment.treasure)
 
         self.__adventurer = arcade.Sprite(
@@ -53,7 +53,7 @@ class MapWindow(arcade.Window):
         self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(self.__agent.state)
 
         self.__pickaxe = arcade.Sprite(
-            ":resources:images/tiles/bomb.png", 0.1)
+            "pictures/pickaxe.png", 0.05)
         self.__pickaxe.center_x, self.__pickaxe.center_y = self.state_to_xy_tool(self.__agent.state)
 
         self.__sword = arcade.Sprite(
