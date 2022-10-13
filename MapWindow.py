@@ -12,6 +12,7 @@ class MapWindow(arcade.Window):
         self.__obstacles_sprites = arcade.SpriteList()
         self.__agent = agent
         self.__iteration = 1
+        arcade.Window.background_color = arcade.color.AMAZON
 
     def setup(self):
         self.__walls = arcade.SpriteList()
