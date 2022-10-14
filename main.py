@@ -22,19 +22,21 @@ if __name__ == '__main__':
 
     agent = Agent(env)
     agent.learn(0)
+
     if os.path.exists(Consts.FILE_AGENT):
         agent.load(Consts.FILE_AGENT)
 
     width = agent.environment.width * Consts.SPRITE_SIZE
     height = agent.environment.height * Consts.SPRITE_SIZE
+
     window = arcade.Window(width, height, 'Gold Digger')
-    menu = MenuView(agent, width, height)
-    window.show_view(menu)
+
+    window.show_view(MenuView(agent, width, height))
     arcade.run()
 
     agent.save(Consts.FILE_AGENT)
 
-    print(agent.score)
+    #print(agent.score)
 
-    plt.plot(agent.history)
-    plt.show()
+    #plt.plot(agent.history)
+    #plt.show()

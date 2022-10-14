@@ -15,6 +15,15 @@ class MenuView(arcade.View):
 
     def on_draw(self):
         self.clear()
+        self.__adventurer = arcade.Sprite(
+            ":resources:images/animated_characters/female_adventurer/femaleAdventurer_walk3.png", 1.5)
+        self.__adventurer.center_x, self.__adventurer.center_y = 120, self.__height / 2
+        self.__adventurer.draw()
+
+        self.__treasure = arcade.Sprite("pictures/tresor.png", 0.25)
+        self.__treasure.center_x, self.__treasure.center_y = 680, self.__height / 2
+        self.__treasure.draw()
+
         arcade.draw_text("Gold Digger", self.__width / 2, self.__height / 2,
                          arcade.color.BLACK, font_size=50, anchor_x="center")
         arcade.draw_text("Click to start.", self.__width / 2, self.__height / 2 - 75,

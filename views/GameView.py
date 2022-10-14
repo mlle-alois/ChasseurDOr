@@ -159,7 +159,6 @@ class GameView(arcade.View):
             #  + quand le personnage est déjà mort une fois il meurt super vite (en 1 coup ?)
             for bee in hit_bee_list:
                 if self.__tool == 'Sword':
-                    print('sword')
                     bee.remove_from_sprite_lists()
                 else:
                     self.__agent.environment.lifePoints -= 1

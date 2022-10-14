@@ -1,6 +1,9 @@
 import arcade
 import tkinter as tk
 
+from bee import Bee
+
+
 class GameOverView(arcade.View):
     def __init__(self, agent, width, height, is_won):
         super().__init__()
@@ -20,6 +23,10 @@ class GameOverView(arcade.View):
         self.clear()
 
         if self.__is_won:
+            self.__treasure = arcade.Sprite("pictures/tresor.png", 0.25)
+            self.__treasure.center_x, self.__treasure.center_y = 680, self.__height / 2
+            self.__treasure.draw()
+
             arcade.draw_text("You won !", self.__width / 2, self.__height / 2,
                              arcade.color.BLACK, font_size=54, anchor_x="center")
             arcade.draw_text("Click to restart.", self.__width / 2, self.__height / 2 - 75,
@@ -29,6 +36,11 @@ class GameOverView(arcade.View):
                              arcade.color.WHITE, font_size=54, anchor_x="center")
             arcade.draw_text("Click to restart.", self.__width / 2, self.__height / 2 - 75,
                              arcade.color.GRAY, font_size=20, anchor_x="center")
+
+            self.__bee = Bee(":resources:images/enemies/bee.png",
+                             1)
+            self.__bee.center_x, self.__bee.center_y = 680, self.__height / 2
+            self.__bee.draw()
 
         #TODO pouvoir activer cette ligne pour relancer le jeu automatiquement après X secondes
 
