@@ -1,13 +1,13 @@
 import os
-import arcade
 
+import arcade
 import matplotlib
 import matplotlib.pyplot as plt
 
 import Consts
 from Agent import Agent
 from Environment import Environment
-from MapWindow import MapWindow
+from views.MenuView import MenuView
 
 matplotlib.use('TkAgg')
 
@@ -15,6 +15,7 @@ matplotlib.use('TkAgg')
 def extract_history(history):
     plt.plot(history)
     plt.show()
+
 
 if __name__ == '__main__':
     env = Environment(Consts.MAP)
@@ -24,8 +25,11 @@ if __name__ == '__main__':
     if os.path.exists(Consts.FILE_AGENT):
         agent.load(Consts.FILE_AGENT)
 
-    windows = MapWindow(agent)
-    windows.setup()
+    width = agent.environment.width * Consts.SPRITE_SIZE
+    height = agent.environment.height * Consts.SPRITE_SIZE
+    window = arcade.Window(width, height, 'Gold Digger')
+    menu = MenuView(agent, width, height)
+    window.show_view(menu)
     arcade.run()
 
     agent.save(Consts.FILE_AGENT)

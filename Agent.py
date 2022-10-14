@@ -12,7 +12,6 @@ class Agent:
         self.__exploration = exploration
         self.__cooling_rate = cooling_rate
         self.__history = []
-        self.__lifePoints = 5
 
     def reset(self, append_score=True):
         if append_score:
@@ -83,10 +82,6 @@ class Agent:
     @property
     def history(self):
         return self.__history
-
-    @property
-    def pv(self):
-        return self.__lifePoints
 
     def __repr__(self):
         return str(self.__qtable)

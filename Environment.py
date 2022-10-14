@@ -52,7 +52,7 @@ class Environment:
 
     # TODO déplacer dans Agent
     def is_dead(self):
-        return self.lifePoints == 0
+        return self.lifePoints <= 0
 
     def is_good_tool(self, state, tool):
         return (self.is_rock(state) and tool == Consts.PICKAXE) or \

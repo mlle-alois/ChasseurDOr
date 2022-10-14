@@ -1,6 +1,6 @@
 MAP = """
 #########################
-#.  RLL  B      R       #
+#.B RLL  B      R       #
 #LL   RRRRRLLL  MLLLLRRR#
 #L  LL   MMM    M LLLL  #
 #RR LLLLM   M  M  RR    #
