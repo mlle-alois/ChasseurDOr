@@ -133,12 +133,12 @@ class GameView(arcade.View):
     def on_update(self, delta_time):
         from views.GameOverView import GameOverView
         if self.__agent.environment.is_dead():
-            game_over_view = GameOverView(self.__agent, self.__width, self.__height, is_won=False)
             self.new_game()
+            game_over_view = GameOverView(self, self.__agent, self.__width, self.__height, is_won=False, restart_automatically=Consts.RESTART_AUTOMATICALLY)
             self.window.show_view(game_over_view)
         elif self.__agent.environment.is_treasure(self.__agent.state):
-            game_over_view = GameOverView(self.__agent, self.__width, self.__height, is_won=True)
             self.new_game()
+            game_over_view = GameOverView(self, self.__agent, self.__width, self.__height, is_won=True, restart_automatically=Consts.RESTART_AUTOMATICALLY)
             self.window.show_view(game_over_view)
         else:
             action, reward = self.__agent.step()

@@ -1,18 +1,19 @@
-import time
+import threading
 
 import arcade
-import threading
 
 from bee import Bee
 
 
 class GameOverView(arcade.View):
-    def __init__(self, agent, width, height, is_won):
+    def __init__(self, game_view, agent, width, height, is_won, restart_automatically):
         super().__init__()
+        self.__game_view = game_view
         self.__agent = agent
         self.__width = width
         self.__height = height
         self.__is_won = is_won
+        self.__restart_automatically = restart_automatically
 
     def on_show_view(self):
         if self.__is_won:
@@ -20,8 +21,9 @@ class GameOverView(arcade.View):
         else:
             arcade.set_background_color(arcade.color.BLACK)
 
-        start_time = threading.Timer(1, self.restart_game)
-        start_time.start()
+        if self.__restart_automatically:
+            start_time = threading.Timer(1, self.restart_game)
+            start_time.start()
 
     def on_draw(self):
         self.clear()
@@ -47,16 +49,10 @@ class GameOverView(arcade.View):
             self.__bee.draw()
 
     def restart_game(self):
-        from views.GameView import GameView
-        game_view = GameView(self.__agent, self.__width, self.__height)
-        game_view.setup()
-        self.window.show_view(game_view)
+        self.window.show_view(self.__game_view)
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
-        from views.GameView import GameView
-        game_view = GameView(self.__agent, self.__width, self.__height)
-        game_view.setup()
-        self.window.show_view(game_view)
+        self.window.show_view(self.__game_view)
 
 
 

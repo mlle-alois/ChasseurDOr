@@ -1,9 +1,10 @@
 import arcade
 
+
 class PauseView(arcade.View):
     def __init__(self, game_view, width, height):
         super().__init__()
-        self.game_view = game_view
+        self.__game_view = game_view
         self.__width = width
         self.__height = height
 
@@ -25,4 +26,4 @@ class PauseView(arcade.View):
 
     def on_key_press(self, key, _modifiers):
         if key == arcade.key.ESCAPE:
-            self.window.show_view(self.game_view)
+            self.window.show_view(self.__game_view)

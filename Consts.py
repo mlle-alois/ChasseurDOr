@@ -47,3 +47,5 @@ FILE_AGENT = 'agent.golddigger'
 
 BEE_SPEED = 1.0
 BEE_INTERVAL = 50
+
+RESTART_AUTOMATICALLY = True
