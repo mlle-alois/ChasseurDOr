@@ -2,7 +2,6 @@ import arcade
 
 import Consts
 from bee import Bee
-from views.PauseView import PauseView
 
 
 class GameView(arcade.View):
@@ -132,9 +131,15 @@ class GameView(arcade.View):
         self.__iteration += 1
 
     def on_update(self, delta_time):
-        if self.__agent.environment.is_dead() or \
-                self.__agent.environment.is_treasure(self.__agent.state):
+        from views.GameOverView import GameOverView
+        if self.__agent.environment.is_dead():
+            game_over_view = GameOverView(self.__agent, self.__width, self.__height, is_won=False)
             self.new_game()
+            self.window.show_view(game_over_view)
+        elif self.__agent.environment.is_treasure(self.__agent.state):
+            game_over_view = GameOverView(self.__agent, self.__width, self.__height, is_won=True)
+            self.new_game()
+            self.window.show_view(game_over_view)
         else:
             action, reward = self.__agent.step()
             self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(self.__agent.state)
@@ -167,5 +172,6 @@ class GameView(arcade.View):
         elif key == arcade.key.H:
             self.__agent.heat()
         elif key == arcade.key.ESCAPE:
+            from views.PauseView import PauseView
             pause = PauseView(self, self.__width, self.__height)
             self.window.show_view(pause)

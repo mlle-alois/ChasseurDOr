@@ -54,6 +54,7 @@ class Agent:
             self.reset()
             while not self.__env.is_treasure(self.state):
                 self.step()
+        self.reset()
 
     def save(self, filename):
         with open(filename, 'wb') as file:
