@@ -1,5 +1,7 @@
+import time
+
 import arcade
-import tkinter as tk
+import threading
 
 from bee import Bee
 
@@ -7,7 +9,6 @@ from bee import Bee
 class GameOverView(arcade.View):
     def __init__(self, agent, width, height, is_won):
         super().__init__()
-        self.__root = tk.Tk()
         self.__agent = agent
         self.__width = width
         self.__height = height
@@ -18,6 +19,9 @@ class GameOverView(arcade.View):
             arcade.set_background_color(arcade.color.YELLOW)
         else:
             arcade.set_background_color(arcade.color.BLACK)
+
+        start_time = threading.Timer(1, self.restart_game)
+        start_time.start()
 
     def on_draw(self):
         self.clear()
@@ -41,11 +45,6 @@ class GameOverView(arcade.View):
                              1)
             self.__bee.center_x, self.__bee.center_y = 680, self.__height / 2
             self.__bee.draw()
-
-        #TODO pouvoir activer cette ligne pour relancer le jeu automatiquement après X secondes
-
-        # self.__root.after(3000, self.restart_game())
-
 
     def restart_game(self):
         from views.GameView import GameView
