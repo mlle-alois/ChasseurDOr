@@ -7,6 +7,9 @@ class Environment:
         self.__nb_states = len(self.__states)
 
     def __parse(self, str_map):
+        row = 0
+        col = 0
+
         self.__states = {}
         for row, line in enumerate(str_map.strip().splitlines()):
             for col, char in enumerate(line):
@@ -49,7 +52,6 @@ class Environment:
     def is_bee(self, state):
         return self.__states[state] == Consts.BEE
 
-
     def is_good_tool(self, state, tool):
         return (self.is_rock(state) and tool == Consts.PICKAXE) or \
                (self.is_bee(state) and tool == Consts.SWORD)
@@ -67,7 +69,7 @@ class Environment:
                 state = new_state
             else:
                 reward = -2
-        #TODO problème l'abeille est en mouvement, cette méthode n'est plus valable
+        # TODO problème l'abeille est en mouvement, cette méthode n'est plus valable
         elif self.is_bee(new_state):
             state = new_state
             if not self.is_good_tool(new_state, tool):

@@ -14,7 +14,7 @@ class World:
         reward, state = self.environment.do(self.agent.state, action)
 
         self.agent.step(reward, state, action)
-        #return action, reward
+        # return action, reward
 
     def make_learn(self, iterations):
         for i in range(iterations):

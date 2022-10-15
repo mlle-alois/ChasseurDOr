@@ -16,17 +16,19 @@ class Agent:
 
         self.__qtable = {}
 
+        self.__state = None
+
     def reset(self, start_state, append_score):
         if append_score:
             self.__history.append(self.__score)
         self.__state = start_state
         self.__score = 0
-        self.resetPv()
+        self.reset_pv()
 
     def step(self, reward, state, action):
-        maxQ = max(self.__qtable[state].values())
+        max_q = max(self.__qtable[state].values())
         self.__qtable[self.state][action] += \
-            self.__alpha * (reward + self.__gamma * maxQ - self.__qtable[self.state][action])
+            self.__alpha * (reward + self.__gamma * max_q - self.__qtable[self.state][action])
 
         self.__state = state
         self.__score += reward
@@ -56,7 +58,7 @@ class Agent:
         with open(filename, 'rb') as file:
             self.__qtable, self.__history = pickle.load(file)
 
-    def resetPv(self):
+    def reset_pv(self):
         self.__life_points = 5
 
     def is_dead(self):

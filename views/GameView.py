@@ -14,21 +14,28 @@ class GameView(arcade.View):
         self.__width = width
         self.__height = height
 
+        self.__walls = arcade.SpriteList()
         self.__rock_sprites = arcade.SpriteList()
         self.__log_sprites = arcade.SpriteList()
-        self.__iteration = 1
-        self.__bee_list = None
-        self.__heart_list = None
+        self.__bee_list = arcade.SpriteList()
+        self.__heart_list = arcade.SpriteList()
+
+        self.__goal = None
         self.__adventurer = None
+        self.__pickaxe = None
+        self.__pickaxe_info = None
+        self.__sword = None
+        self.__sword_info = None
+
+        self.__iteration = 1
+
+        self.__tool = Consts.PICKAXE
 
     def on_show_view(self):
         arcade.set_background_color(arcade.color.AMAZON)
 
     def setup(self):
         agent_state = self.__world.agent.state
-        self.__walls = arcade.SpriteList()
-        self.__bee_list = arcade.SpriteList()
-        self.__heart_list = arcade.SpriteList()
 
         for state in self.__world.environment.states:
             if self.__world.environment.is_wall(state):
@@ -107,11 +114,11 @@ class GameView(arcade.View):
         self.__heart_list.draw()
 
         if self.__world.agent.state[2] == Consts.PICKAXE:
-            self.__tool = 'Pickaxe'
+            self.__tool = Consts.PICKAXE
             self.__pickaxe.draw()
             self.__pickaxe_info.draw()
         else:
-            self.__tool = 'Sword'
+            self.__tool = Consts.SWORD
             self.__sword.draw()
             self.__sword_info.draw()
 
@@ -139,11 +146,17 @@ class GameView(arcade.View):
 
         if self.__world.agent.is_dead():
             self.new_game()
-            game_over_view = GameOverView(self, self.__width, self.__height, is_won=False, restart_automatically=Consts.RESTART_AUTOMATICALLY)
+            game_over_view = GameOverView(
+                self, self.__width, self.__height, is_won=False,
+                restart_automatically=Consts.RESTART_AUTOMATICALLY
+            )
             self.window.show_view(game_over_view)
         elif self.__world.environment.is_treasure(agent_state):
             self.new_game()
-            game_over_view = GameOverView(self, self.__width, self.__height, is_won=True, restart_automatically=Consts.RESTART_AUTOMATICALLY)
+            game_over_view = GameOverView(
+                self, self.__width, self.__height, is_won=True,
+                restart_automatically=Consts.RESTART_AUTOMATICALLY
+            )
             self.window.show_view(game_over_view)
         else:
             self.__world.step()
@@ -163,7 +176,7 @@ class GameView(arcade.View):
             # TODO problème il y a 2 dans la hit list donc on enlève toujours 2 points de vie au lieu de 1
             #  + quand le personnage est déjà mort une fois il meurt super vite (en 1 coup ?)
             for bee in hit_bee_list:
-                if self.__tool == 'Sword':
+                if self.__tool == Consts.SWORD:
                     bee.remove_from_sprite_lists()
                 else:
                     self.__world.agent.hurt()

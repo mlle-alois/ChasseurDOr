@@ -14,6 +14,9 @@ class GameOverView(arcade.View):
         self.__is_won = is_won
         self.__restart_automatically = restart_automatically
 
+        self.__treasure = None
+        self.__bee = None
+
     def on_show_view(self):
         if self.__is_won:
             arcade.set_background_color(arcade.color.YELLOW)
@@ -52,6 +55,3 @@ class GameOverView(arcade.View):
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         self.window.show_view(self.__game_view)
-
-
-
