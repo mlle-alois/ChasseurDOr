@@ -5,7 +5,6 @@ class Environment:
     def __init__(self, str_map):
         self.__parse(str_map)
         self.__nb_states = len(self.__states)
-        self.lifePoints = 5  # TODO déplacer dans l'agent
 
     def __parse(self, str_map):
         self.__states = {}
@@ -50,9 +49,6 @@ class Environment:
     def is_bee(self, state):
         return self.__states[state] == Consts.BEE
 
-    # TODO déplacer dans Agent
-    def is_dead(self):
-        return self.lifePoints <= 0
 
     def is_good_tool(self, state, tool):
         return (self.is_rock(state) and tool == Consts.PICKAXE) or \
@@ -83,9 +79,6 @@ class Environment:
 
         return reward, state
 
-    def resetPv(self):
-        self.lifePoints = 5
-
     @property
     def start(self):
         return self.__start
@@ -105,7 +98,3 @@ class Environment:
     @property
     def width(self):
         return self.__cols
-
-    @property
-    def pv(self):
-        return self.lifePoints

@@ -6,10 +6,9 @@ from bee import Bee
 
 
 class GameOverView(arcade.View):
-    def __init__(self, game_view, agent, width, height, is_won, restart_automatically):
+    def __init__(self, game_view, width, height, is_won, restart_automatically):
         super().__init__()
         self.__game_view = game_view
-        self.__agent = agent
         self.__width = width
         self.__height = height
         self.__is_won = is_won

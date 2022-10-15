@@ -4,9 +4,9 @@ from views.GameView import GameView
 
 
 class MenuView(arcade.View):
-    def __init__(self, agent, width, height):
+    def __init__(self, world, width, height):
         super().__init__()
-        self.__agent = agent
+        self.__world = world
         self.__width = width
         self.__height = height
 
@@ -30,6 +30,6 @@ class MenuView(arcade.View):
                          arcade.color.GRAY, font_size=20, anchor_x="center")
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
-        game = GameView(self.__agent, self.__width, self.__height)
+        game = GameView(self.__world, self.__width, self.__height)
         game.setup()
         self.window.show_view(game)

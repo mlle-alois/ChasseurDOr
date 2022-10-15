@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import Consts
 from Agent import Agent
 from Environment import Environment
+from World import World
 from views.MenuView import MenuView
 
 matplotlib.use('TkAgg')
@@ -18,23 +19,22 @@ def extract_history(history):
 
 
 if __name__ == '__main__':
-    env = Environment(Consts.MAP)
 
-    agent = Agent(env)
-    agent.learn(0)
+    world = World(Agent(), Environment(Consts.MAP))
+    world.make_learn(0)
 
     if os.path.exists(Consts.FILE_AGENT):
-        agent.load(Consts.FILE_AGENT)
+        world.agent.load(Consts.FILE_AGENT)
 
-    width = agent.environment.width * Consts.SPRITE_SIZE
-    height = agent.environment.height * Consts.SPRITE_SIZE
+    width = world.environment.width * Consts.SPRITE_SIZE
+    height = world.environment.height * Consts.SPRITE_SIZE
 
     window = arcade.Window(width, height, 'Gold Digger')
 
-    window.show_view(MenuView(agent, width, height))
+    window.show_view(MenuView(world, width, height))
     arcade.run()
 
-    agent.save(Consts.FILE_AGENT)
+    world.agent.save(Consts.FILE_AGENT)
 
     #print(agent.score)
 
