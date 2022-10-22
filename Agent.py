@@ -16,38 +16,41 @@ class Agent:
 
         self.__qtable = {}
 
-        self.__state = None
+        self.__current_radar = None
 
     def reset(self, start_state, append_score):
         if append_score:
             self.__history.append(self.__score)
-        self.__state = start_state
+        self.__current_radar = start_state
         self.__score = 0
         self.reset_pv()
 
-    def step(self, reward, state, action):
-        max_q = max(self.__qtable[state].values())
-        self.__qtable[self.state][action] += \
-            self.__alpha * (reward + self.__gamma * max_q - self.__qtable[self.state][action])
+    ## state devient un radar ?
+    def step(self, reward, radar, action):
+        ## action qui vaut le plus de points ?
+        max_q = max(self.__qtable[radar].values())
+        self.__qtable[self.current_radar][action] += \
+            self.__alpha * (reward + self.__gamma * max_q - self.__qtable[self.current_radar][action])
 
-        self.__state = state
+        self.__current_radar = radar
         self.__score += reward
 
     def heat(self):
         self.__exploration = 1
 
-    def init_qtable(self, states):
-        for state in states:
-            self.__qtable[state] = {}
+    ##TODO passer les radars
+    def init_qtable(self, radars):
+        for radar in radars:
+            self.__qtable[radar] = {}
             for action in Consts.ACTIONS:
-                self.__qtable[state][action] = 0
+                self.__qtable[radar][action] = 0
 
     def best_action(self):
         if uniform(0, 1) < self.__exploration:
             self.__exploration *= self.__cooling_rate
             return choice(Consts.ACTIONS)
         else:
-            actions = self.__qtable[self.__state]
+            actions = self.__qtable[self.__current_radar]
             return max(actions, key=actions.get)
 
     def save(self, filename):
@@ -72,8 +75,8 @@ class Agent:
         return self.__score
 
     @property
-    def state(self):
-        return self.__state
+    def current_radar(self):
+        return self.__current_radar
 
     @property
     def exploration(self):

@@ -3,7 +3,8 @@ class World:
         self.__environment = environment
         self.__agent = agent
 
-        self.agent.init_qtable(self.environment.states)
+        ##TODO
+        # self.agent.init_qtable(radars)
         self.reset(False)
 
     def reset(self, append_score=True):
@@ -11,7 +12,7 @@ class World:
 
     def step(self):
         action = self.agent.best_action()
-        reward, state = self.environment.do(self.agent.state, action)
+        reward, state = self.environment.do(self.agent.current_radar, action)
 
         self.agent.step(reward, state, action)
         # return action, reward
@@ -19,7 +20,7 @@ class World:
     def make_learn(self, iterations):
         for i in range(iterations):
             self.reset()
-            while not self.environment.is_treasure(self.agent.state):
+            while not self.environment.is_treasure(self.agent.current_radar):
                 self.step()
         self.reset()
 

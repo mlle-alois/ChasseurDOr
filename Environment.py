@@ -1,5 +1,5 @@
 import Consts
-
+import itertools
 
 class Environment:
     def __init__(self, str_map):
@@ -24,59 +24,64 @@ class Environment:
         self.__rows = row + 1
         self.__cols = col + 1
 
+        a = [[Consts.TREASURE, Consts.MAP_WALL, Consts.RIVER, Consts.ROCK, Consts.LOG, Consts.BEE, Consts.EMPTY]]
+        self.__radars = list(itertools.product(*a, repeat=9))
+
     def is_forbidden_state(self, state):
-        return state not in self.__states \
-               or self.is_wall(state) or self.is_river(state)
+        return self.is_wall(state) or self.is_river(state)
 
     def is_treasure(self, state):
-        return (state[0], state[1]) == self.__treasure
+        return state == Consts.TREASURE
 
     def is_wall(self, state):
-        return self.__states[state] == Consts.MAP_WALL
+        return state == Consts.MAP_WALL
 
     def is_river(self, state):
-        return self.__states[state] == Consts.RIVER
+        return state == Consts.RIVER
 
     def is_start(self, state):
-        return self.__states[state] == Consts.MAP_START
+        return state == Consts.MAP_START
 
     def is_obstacle(self, state):
-        return self.__states[state] == Consts.ROCK or self.__states[state] == Consts.LOG
+        return state == Consts.ROCK or state == Consts.LOG
 
     def is_log(self, state):
-        return self.__states[state] == Consts.LOG
+        return state == Consts.LOG
 
     def is_rock(self, state):
-        return self.__states[state] == Consts.ROCK
+        return state == Consts.ROCK
 
     def is_bee(self, state):
-        return self.__states[state] == Consts.BEE
+        return state == Consts.BEE
 
     def is_good_tool(self, state, tool):
-        return (self.is_rock(state) and tool == Consts.PICKAXE) or \
-               (self.is_bee(state) and tool == Consts.SWORD)
+        return (state and tool == Consts.PICKAXE) or \
+               (state and tool == Consts.SWORD)
 
     def do(self, state, action):
+        ## move doit donner un nouveau radar
+        ## comment faire :(
         move = Consts.ACTION_MOVES[action]
         tool = move[2] if move[2] != 0 else state[2]
-        new_state = (state[0] + move[0], state[1] + move[1], tool)
+        new_radar = (state[0] + move[0], state[1] + move[1], tool)
+        agent_position = new_radar[5]
         reward = Consts.REWARD_DEFAULT
 
-        if self.is_forbidden_state(new_state):
+        if self.is_forbidden_state(agent_position):
             reward = -2 * self.__nb_states
-        elif self.is_obstacle(new_state):
-            if self.is_good_tool(new_state, tool):
-                state = new_state
+        elif self.is_obstacle(agent_position):
+            if self.is_good_tool(agent_position, tool):
+                state = new_radar
             else:
                 reward = -2
         # TODO problème l'abeille est en mouvement, cette méthode n'est plus valable
-        elif self.is_bee(new_state):
-            state = new_state
-            if not self.is_good_tool(new_state, tool):
+        elif self.is_bee(agent_position):
+            state = new_radar
+            if not self.is_good_tool(agent_position, tool):
                 reward = -3 * self.__nb_states
         else:
-            state = new_state
-            if self.__states[state] == Consts.TREASURE:
+            state = new_radar
+            if self.is_treasure(agent_position):
                 reward = 3 * self.__nb_states
 
         return reward, state
@@ -92,6 +97,10 @@ class Environment:
     @property
     def states(self):
         return list(self.__states.keys())
+
+    @property
+    def radars(self):
+        return self.__radars
 
     @property
     def height(self):

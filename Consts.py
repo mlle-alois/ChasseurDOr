@@ -19,6 +19,7 @@ RIVER = 'M'
 ROCK = 'R'
 LOG = 'L'
 BEE = 'B'
+EMPTY = ' '
 SWORD = 'S'
 PICKAXE = 'P'
 
@@ -30,6 +31,7 @@ ACTION_PICKAXE = 'P'
 ACTION_SWORD = 'S'
 ACTIONS = [ACTION_UP, ACTION_DOWN, ACTION_LEFT, ACTION_RIGHT, ACTION_PICKAXE, ACTION_SWORD]
 
+## TODO à changer pour les radars ? ou pas forcément
 ACTION_MOVES = {
     ACTION_UP: (-1, 0, 0),
     ACTION_DOWN: (1, 0, 0),

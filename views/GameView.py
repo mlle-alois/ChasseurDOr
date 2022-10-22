@@ -1,3 +1,5 @@
+import time
+
 import arcade
 
 import Consts
@@ -19,6 +21,7 @@ class GameView(arcade.View):
         self.__log_sprites = arcade.SpriteList()
         self.__bee_list = arcade.SpriteList()
         self.__heart_list = arcade.SpriteList()
+        self.__all_the_sprites = arcade.SpriteList()
 
         self.__goal = None
         self.__adventurer = None
@@ -40,30 +43,43 @@ class GameView(arcade.View):
         for state in self.__world.environment.states:
             if self.__world.environment.is_wall(state):
                 sprite = arcade.Sprite(":resources:images/topdown_tanks/treeGreen_large.png", 0.5)
-
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
+                sprite.properties['name'] = Consts.MAP_WALL
+
                 self.__walls.append(sprite)
+                self.__all_the_sprites.append(sprite)
+
             elif self.__world.environment.is_rock(state):
                 sprite = arcade.Sprite(":resources:images/tiles/rock.png", 0.25)
-
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
+                sprite.properties['name'] = Consts.ROCK
+
                 self.__rock_sprites.append(sprite)
+                self.__all_the_sprites.append(sprite)
 
             elif self.__world.environment.is_log(state):
                 sprite = arcade.Sprite(":resources:images/tiles/boxCrate_single.png", 0.25)
-
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
+                sprite.properties['name'] = Consts.LOG
+
                 self.__log_sprites.append(sprite)
+                self.__all_the_sprites.append(sprite)
 
             elif self.__world.environment.is_river(state):
                 sprite = arcade.Sprite(":resources:images/tiles/water.png", 0.25)
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
+                sprite.properties['name'] = Consts.RIVER
+
                 self.__walls.append(sprite)
+                self.__all_the_sprites.append(sprite)
+
             elif self.__world.environment.is_bee(state):
-                sprite = Bee(":resources:images/enemies/bee.png",
-                             0.25)
+                sprite = Bee(":resources:images/enemies/bee.png", 0.25)
                 sprite.center_x, sprite.center_y = self.state_to_xy(state)
+                sprite.properties['name'] = Consts.BEE
+
                 self.__bee_list.append(sprite)
+                self.__all_the_sprites.append(sprite)
 
         position_x = 200
         for pv in range(self.__world.agent.life_points):
@@ -74,6 +90,8 @@ class GameView(arcade.View):
 
         self.__goal = arcade.Sprite("pictures/tresor.png", 0.07)
         self.__goal.center_x, self.__goal.center_y = self.state_to_xy(self.__world.environment.treasure)
+        self.__goal.properties['name'] = Consts.TREASURE
+        self.__all_the_sprites.append(self.__goal)
 
         self.__adventurer = arcade.Sprite(
             ":resources:images/animated_characters/female_adventurer/femaleAdventurer_walk3.png", 0.3)
@@ -94,6 +112,7 @@ class GameView(arcade.View):
         self.__sword_info = arcade.Sprite(
             ":resources:gui_basic_assets/items/sword_gold.png", 0.6)
         self.__sword_info.center_x, self.__sword_info.center_y = 100, 50
+
 
     def state_to_xy(self, state):
         return (state[1] + 0.5) * Consts.SPRITE_SIZE, \
@@ -139,9 +158,12 @@ class GameView(arcade.View):
     def new_game(self):
         self.__world.reset()
         self.setup()
+        ## Horrible trouver une autre manière de la faire
+        self.__world.agent.current_radar = self.__get_radar()
         self.__iteration += 1
 
     def on_update(self, delta_time):
+        time.sleep(1)
         agent_state = self.__world.agent.state
 
         if self.__world.agent.is_dead():
@@ -151,6 +173,7 @@ class GameView(arcade.View):
                 restart_automatically=Consts.RESTART_AUTOMATICALLY
             )
             self.window.show_view(game_over_view)
+
         elif self.__world.environment.is_treasure(agent_state):
             self.new_game()
             game_over_view = GameOverView(
@@ -158,6 +181,7 @@ class GameView(arcade.View):
                 restart_automatically=Consts.RESTART_AUTOMATICALLY
             )
             self.window.show_view(game_over_view)
+
         else:
             self.__world.step()
             self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(agent_state)
@@ -166,6 +190,9 @@ class GameView(arcade.View):
             self.__rock_sprites.update()
             self.__bee_list.update()
             self.__heart_list.update()
+
+            radar = self.__get_radar()
+            self.__world.agent.current_radar = radar
 
             hit_rock_list = arcade.check_for_collision_with_list(self.__adventurer, self.__rock_sprites)
             hit_bee_list = arcade.check_for_collision_with_list(self.__adventurer, self.__bee_list)
@@ -183,6 +210,7 @@ class GameView(arcade.View):
                     if len(self.__heart_list) > 0:
                         self.__heart_list[len(self.__heart_list) - 1].remove_from_sprite_lists()
 
+
     def on_key_press(self, key, modifiers):
         if key == arcade.key.R:
             self.new_game()
@@ -191,3 +219,16 @@ class GameView(arcade.View):
         elif key == arcade.key.ESCAPE:
             pause = PauseView(self, self.__width, self.__height)
             self.window.show_view(pause)
+
+    def __get_radar(self):
+        radar = []
+
+        for x in range(-30, 31, 30):
+            for y in range(30, -31, -30):
+                points = arcade.get_sprites_at_point(
+                    (self.__adventurer.center_x + x, self.__adventurer.center_y + y),
+                    self.__all_the_sprites
+                )
+                radar.append("" if len(points) == 0 else points[0].properties['name'])
+
+        return radar
