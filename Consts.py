@@ -27,18 +27,22 @@ ACTION_UP = 'U'
 ACTION_DOWN = 'D'
 ACTION_LEFT = 'L'
 ACTION_RIGHT = 'R'
+ACTION_PUSH = 'Ps'
+ACTION_PULL = 'Pl'
 ACTION_PICKAXE = 'P'
 ACTION_SWORD = 'S'
-ACTIONS = [ACTION_UP, ACTION_DOWN, ACTION_LEFT, ACTION_RIGHT, ACTION_PICKAXE, ACTION_SWORD]
+ACTIONS = [ACTION_UP, ACTION_DOWN, ACTION_LEFT, ACTION_RIGHT, ACTION_PICKAXE, ACTION_SWORD, ACTION_PULL, ACTION_PUSH]
 
-## TODO à changer pour les radars ? ou pas forcément
+## TODO ajouter push/pull dans toutes les directions ?
 ACTION_MOVES = {
-    ACTION_UP: (-1, 0, 0),
-    ACTION_DOWN: (1, 0, 0),
-    ACTION_LEFT: (0, -1, 0),
-    ACTION_RIGHT: (0, 1, 0),
-    ACTION_PICKAXE: (0, 0, PICKAXE),
-    ACTION_SWORD: (0, 0, SWORD)
+    ACTION_UP: (0, 30),
+    ACTION_DOWN: (0, -30),
+    ACTION_LEFT: (-30, 0),
+    ACTION_RIGHT: (30, 0),
+    ## enlever les outils
+    ACTION_PICKAXE: (0, 0),
+    ACTION_SWORD: (0, 0)
+    ## switch_tool ?
 }
 
 REWARD_DEFAULT = -1
