@@ -38,44 +38,45 @@ class GameView(arcade.View):
         arcade.set_background_color(arcade.color.AMAZON)
 
     def setup(self):
+        ##garder les coordonnées dans env
         agent_state = self.__world.agent.state
 
-        for state in self.__world.environment.states:
-            if self.__world.environment.is_wall(state):
+        for points in self.__world.environment.map_coordinates:
+            if self.__world.environment.is_wall(points):
                 sprite = arcade.Sprite(":resources:images/topdown_tanks/treeGreen_large.png", 0.5)
-                sprite.center_x, sprite.center_y = self.state_to_xy(state)
+                sprite.center_x, sprite.center_y = self.state_to_xy(points)
                 sprite.properties['name'] = Consts.MAP_WALL
 
                 self.__walls.append(sprite)
                 self.__all_the_sprites.append(sprite)
 
-            elif self.__world.environment.is_rock(state):
+            elif self.__world.environment.is_rock(points):
                 sprite = arcade.Sprite(":resources:images/tiles/rock.png", 0.25)
-                sprite.center_x, sprite.center_y = self.state_to_xy(state)
+                sprite.center_x, sprite.center_y = self.state_to_xy(points)
                 sprite.properties['name'] = Consts.ROCK
 
                 self.__rock_sprites.append(sprite)
                 self.__all_the_sprites.append(sprite)
 
-            elif self.__world.environment.is_log(state):
+            elif self.__world.environment.is_log(points):
                 sprite = arcade.Sprite(":resources:images/tiles/boxCrate_single.png", 0.25)
-                sprite.center_x, sprite.center_y = self.state_to_xy(state)
+                sprite.center_x, sprite.center_y = self.state_to_xy(points)
                 sprite.properties['name'] = Consts.LOG
 
                 self.__log_sprites.append(sprite)
                 self.__all_the_sprites.append(sprite)
 
-            elif self.__world.environment.is_river(state):
+            elif self.__world.environment.is_river(points):
                 sprite = arcade.Sprite(":resources:images/tiles/water.png", 0.25)
-                sprite.center_x, sprite.center_y = self.state_to_xy(state)
+                sprite.center_x, sprite.center_y = self.state_to_xy(points)
                 sprite.properties['name'] = Consts.RIVER
 
                 self.__walls.append(sprite)
                 self.__all_the_sprites.append(sprite)
 
-            elif self.__world.environment.is_bee(state):
+            elif self.__world.environment.is_bee(points):
                 sprite = Bee(":resources:images/enemies/bee.png", 0.25)
-                sprite.center_x, sprite.center_y = self.state_to_xy(state)
+                sprite.center_x, sprite.center_y = self.state_to_xy(points)
                 sprite.properties['name'] = Consts.BEE
 
                 self.__bee_list.append(sprite)

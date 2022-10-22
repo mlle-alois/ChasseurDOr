@@ -3,25 +3,31 @@ class World:
         self.__environment = environment
         self.__agent = agent
 
-        ##TODO
-        # self.agent.init_qtable(radars)
+        radars = self.__environment.radars
+        self.agent.init_qtable(radars)
+
         self.reset(False)
 
     def reset(self, append_score=True):
         self.__agent.reset(self.__environment.start, append_score)
 
-    def step(self):
+    def step(self, new_radar):
         action = self.agent.best_action()
-        reward, state = self.environment.do(self.agent.current_radar, action)
+        ##TODO l'environnement n'a rien a faire il fournit juste les fonction is_rock ...
+        # reward, state = self.environment.do(self.agent.current_radar, action, self.__agent.current_radar, new_radar)
 
-        self.agent.step(reward, state, action)
+
+        # self.agent.step(reward, state, action, new_radar)
         # return action, reward
 
+    ## c'est dégueu
     def make_learn(self, iterations):
         for i in range(iterations):
             self.reset()
             while not self.environment.is_treasure(self.agent.current_radar):
-                self.step()
+                print("qsmoldihzldjsghaerfjzmkzdfhjgjhsfmdkenjg")
+                ## TODO
+                # self.step()
         self.reset()
 
     @property

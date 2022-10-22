@@ -21,7 +21,6 @@ def extract_history(history):
 if __name__ == '__main__':
 
     world = World(Agent(), Environment(Consts.MAP))
-    world.make_learn(0)
 
     if os.path.exists(Consts.FILE_AGENT):
         world.agent.load(Consts.FILE_AGENT)
