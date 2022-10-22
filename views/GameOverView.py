@@ -2,7 +2,7 @@ import threading
 
 import arcade
 
-from bee import Bee
+from Bee import Bee
 
 
 class GameOverView(arcade.View):

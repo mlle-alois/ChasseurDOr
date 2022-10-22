@@ -1,9 +1,7 @@
-import time
-
 import arcade
 
 import Consts
-from bee import Bee
+from Bee import Bee
 from views.GameOverView import GameOverView
 from views.PauseView import PauseView
 
@@ -114,7 +112,6 @@ class GameView(arcade.View):
             ":resources:gui_basic_assets/items/sword_gold.png", 0.6)
         self.__sword_info.center_x, self.__sword_info.center_y = 100, 50
 
-
     def state_to_xy(self, state):
         return (state[1] + 0.5) * Consts.SPRITE_SIZE, \
                (self.__world.environment.height - state[0] - 0.5) * Consts.SPRITE_SIZE
@@ -142,29 +139,32 @@ class GameView(arcade.View):
             self.__sword.draw()
             self.__sword_info.draw()
 
-        arcade.draw_text("Press Esc. to pause",
-                         self.__width / 2,
-                         self.__height - 25,
-                         arcade.color.WHITE,
-                         font_size=20,
-                         anchor_x="center")
+        arcade.draw_text(
+            "Press Esc. to pause",
+            self.__width / 2,
+            self.__height - 25,
+            arcade.color.WHITE,
+            font_size=20,
+            anchor_x="center"
+        )
 
         arcade.draw_text(
             f"Tool :      PV : {self.__world.agent.life_points}",
-            10, 40, arcade.csscolor.WHITE, 20)
+            10, 40, arcade.csscolor.WHITE, 20
+        )
         arcade.draw_text(
             f"#{self.__iteration} Score : {self.__world.agent.score} T°C : {self.__world.agent.exploration}",
-            10, 10, arcade.csscolor.WHITE, 20)
+            10, 10, arcade.csscolor.WHITE, 20
+        )
 
     def new_game(self):
         self.__world.reset()
         self.setup()
         ## Horrible trouver une autre manière de la faire
-        self.__world.agent.current_radar = self.__get_radar()
+        self.__world.update_agent_radar(self.__get_radar())
         self.__iteration += 1
 
     def on_update(self, delta_time):
-        time.sleep(1)
         agent_state = self.__world.agent.state
 
         if self.__world.agent.is_dead():
@@ -175,7 +175,7 @@ class GameView(arcade.View):
             )
             self.window.show_view(game_over_view)
 
-        elif self.__world.environment.is_treasure(agent_state):
+        elif self.__world.agent_has_won():
             self.new_game()
             game_over_view = GameOverView(
                 self, self.__width, self.__height, is_won=True,
@@ -184,16 +184,15 @@ class GameView(arcade.View):
             self.window.show_view(game_over_view)
 
         else:
-            self.__world.step()
+            self.__world.step(self.__get_radar())
+
             self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(agent_state)
             self.__sword.center_x, self.__sword.center_y = self.state_to_xy_tool(agent_state)
             self.__pickaxe.center_x, self.__pickaxe.center_y = self.state_to_xy_tool(agent_state)
+
             self.__rock_sprites.update()
             self.__bee_list.update()
             self.__heart_list.update()
-
-            radar = self.__get_radar()
-            self.__world.agent.current_radar = radar
 
             hit_rock_list = arcade.check_for_collision_with_list(self.__adventurer, self.__rock_sprites)
             hit_bee_list = arcade.check_for_collision_with_list(self.__adventurer, self.__bee_list)
@@ -210,7 +209,6 @@ class GameView(arcade.View):
                     self.__world.agent.hurt()
                     if len(self.__heart_list) > 0:
                         self.__heart_list[len(self.__heart_list) - 1].remove_from_sprite_lists()
-
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.R:

@@ -1,5 +1,3 @@
-import itertools
-
 import Consts
 
 
@@ -7,11 +5,6 @@ class Environment:
     def __init__(self, str_map):
         self.__parse(str_map)
         self.__nb_states = len(self.__map_coordinates)
-
-        radar_sample = [
-            [Consts.TREASURE, Consts.MAP_WALL, Consts.RIVER, Consts.ROCK, Consts.LOG, Consts.BEE, Consts.EMPTY]
-        ]
-        self.__radars = list(itertools.product(*radar_sample, repeat=9))
 
     def __parse(self, str_map):
         row = 0
@@ -21,13 +14,9 @@ class Environment:
         for row, line in enumerate(str_map.strip().splitlines()):
             for col, char in enumerate(line):
                 if char == Consts.MAP_START:
-                    self.__start = (row, col, Consts.PICKAXE)
+                    self.__start = (row, col)
                 elif char == Consts.TREASURE:
                     self.__treasure = (row, col)
-
-                ## TODO enlever l'outil
-                for tool in Consts.PICKAXE, Consts.SWORD:
-                    self.__map_coordinates[(row, col, tool)] = char
 
         self.__rows = row + 1
         self.__cols = col + 1
@@ -64,7 +53,7 @@ class Environment:
         return (self.is_rock(point) and tool == Consts.PICKAXE) or \
                (self.is_bee(point) and tool == Consts.SWORD)
 
-    ## peut-être même pas besoin de l'ancien radar
+
     # def do(self, state, action, old_radar, new_radar):
     #     move = Consts.ACTION_MOVES[action]
     #     tool = move[2] if move[2] != 0 else state[2]
@@ -101,10 +90,6 @@ class Environment:
     @property
     def map_coordinates(self):
         return list(self.__map_coordinates.keys())
-
-    @property
-    def radars(self):
-        return self.__radars
 
     @property
     def height(self):
