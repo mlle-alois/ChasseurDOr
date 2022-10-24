@@ -17,6 +17,7 @@ class Environment:
                     self.__start = (row, col)
                 elif char == Consts.TREASURE:
                     self.__treasure = (row, col)
+                self.__map_coordinates[(row, col)] = char
 
         self.__rows = row + 1
         self.__cols = col + 1
@@ -27,6 +28,9 @@ class Environment:
 
     def is_treasure(self, point):
         return (point[0], point[1]) == self.__treasure
+
+    def is_agent_on_treasure(self, radar):
+        return radar == Consts.TREASURE
 
     def is_wall(self, point):
         return self.__map_coordinates[point] == Consts.MAP_WALL

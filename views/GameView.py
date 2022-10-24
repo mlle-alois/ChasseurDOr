@@ -37,7 +37,7 @@ class GameView(arcade.View):
 
     def setup(self):
         ##garder les coordonnées dans env
-        agent_state = self.__world.agent.state
+        agent_state = self.__world.agent.current_radar
 
         for points in self.__world.environment.map_coordinates:
             if self.__world.environment.is_wall(points):
@@ -97,7 +97,8 @@ class GameView(arcade.View):
             sprite = self.__create_sprite(
                 "pictures/heart.png",
                 0.05,
-                (position_x, 50)
+                (position_x, 50),
+                ""
             )
             self.__heart_list.append(sprite)
             position_x += 30
@@ -110,7 +111,8 @@ class GameView(arcade.View):
         self.__adventurer = self.__create_sprite(
             ":resources:images/animated_characters/female_adventurer/femaleAdventurer_walk3.png",
             0.3,
-            agent_state
+            agent_state,
+            "A"
         )
 
         self.__pickaxe = self.__create_tool_sprite("pictures/pickaxe.png", 0.05, agent_state)
@@ -141,7 +143,7 @@ class GameView(arcade.View):
         self.__bee_list.draw()
         self.__heart_list.draw()
 
-        if self.__world.agent.state[2] == Consts.PICKAXE:
+        if self.__world.agent.tool == Consts.PICKAXE:
             self.__tool = Consts.PICKAXE
             self.__pickaxe.draw()
             self.__pickaxe_info.draw()
@@ -176,7 +178,11 @@ class GameView(arcade.View):
         self.__iteration += 1
 
     def on_update(self, delta_time):
-        agent_state = self.__world.agent.state
+        radar = self.__get_radar()
+        self.__world.update_agent_radar(radar)
+        agent_state = radar
+
+        self.__world.agent.update_qtable(radar)
 
         if self.__world.agent.is_dead():
             self.new_game()
@@ -211,8 +217,6 @@ class GameView(arcade.View):
             for rock in hit_rock_list:
                 rock.remove_from_sprite_lists()
 
-            # TODO problème il y a 2 dans la hit list donc on enlève toujours 2 points de vie au lieu de 1
-            #  + quand le personnage est déjà mort une fois il meurt super vite (en 1 coup ?)
             for bee in hit_bee_list:
                 if self.__tool == Consts.SWORD:
                     bee.remove_from_sprite_lists()
@@ -230,9 +234,25 @@ class GameView(arcade.View):
             pause = PauseView(self, self.__width, self.__height)
             self.window.show_view(pause)
 
+    ## TODO Radar en flocon
     def __get_radar(self):
         radar = []
 
+        # for w in range(0, 3):
+        #     if w == 0 or w == 2:
+        #         start_index = 30
+        #         end_index = 31
+        #     else:
+        #         start_index = 60
+        #         end_index = 61
+        #
+        #     for x in range(-start_index, end_index, 30):
+        #         for y in range(start_index, -end_index, -30):
+        #             points = arcade.get_sprites_at_point(
+        #                 (self.__adventurer.center_x + x, self.__adventurer.center_y + y),
+        #                 self.__all_the_sprites
+        #             )
+        #             radar.append("" if len(points) == 0 else points[0].properties['name'])
         for x in range(-30, 31, 30):
             for y in range(30, -31, -30):
                 points = arcade.get_sprites_at_point(
@@ -243,7 +263,7 @@ class GameView(arcade.View):
 
         return radar
 
-    def __create_sprite(self, picture_path, size, coordinate, token_name=""):
+    def __create_sprite(self, picture_path, size, coordinate, token_name):
         sprite = arcade.Sprite(picture_path, size)
         sprite.center_x, sprite.center_y = self.state_to_xy(coordinate)
         sprite.properties['name'] = token_name

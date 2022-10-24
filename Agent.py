@@ -17,7 +17,7 @@ class Agent:
 
         self.__position = (0, 0) ##TODO
         self.__qtable = {}
-        self.__current_radar = None
+        self.__current_radar = {}
 
     def reset(self, start_state, append_score):
         if append_score:
@@ -41,32 +41,42 @@ class Agent:
 
     ## Complète la q_table au fur et à mesure
     def get_qtable(self, radar):
-        if radar not in self.__qtable:
-            self.__qtable[radar] = {}
-            for tool in Consts.SWORD, Consts.PICKAXE:
-                self.__qtable[radar][tool] = {}
-                for action in self.__available_actions(radar, tool):
-                    self.__qtable[radar][tool][action] = 0
-
         return self.__qtable[radar]
 
-    def best_action(self, tool):
+    def update_qtable(self, radar):
+        print(radar, self.__qtable)
+        for i in self.__qtable:
+            if self.__qtable[i][0] == radar:
+                return
+
+        qtable_size = len(self.__qtable)
+        self.__qtable[qtable_size] = [radar, {}]
+
+        for tool in Consts.SWORD, Consts.PICKAXE:
+            self.__qtable[qtable_size][1][tool] = {}
+            for action in self.__available_actions(tool):
+                self.__qtable[qtable_size][1][tool][action] = 0
+        print(self.__qtable)
+
+
+    def best_action(self):
         if uniform(0, 1) < self.__exploration:
             self.__exploration *= self.__cooling_rate
             return choice(Consts.ACTIONS)
         else:
-            actions = self.__qtable[self.__current_radar][tool]
+            # print(self.__qtable)
+            actions = self.__qtable[self.__current_radar][self.__tool]
             return max(actions, key=actions.get)
 
-    def __available_actions(self, radar, tool):
-        actions = [Consts.ACTION_UP, Consts.ACTION_DOWN, Consts.ACTION_LEFT, Consts.ACTION_RIGHT]
-        if Consts.ROCK in radar and tool != Consts.PICKAXE:
+    def __available_actions(self, tool):
+        actions = [
+            Consts.ACTION_UP, Consts.ACTION_DOWN, Consts.ACTION_LEFT, Consts.ACTION_RIGHT,
+            Consts.ACTION_PULL_UP, Consts.ACTION_PULL_DOWN, Consts.ACTION_PULL_RIGHT, Consts.ACTION_PULL_LEFT,
+        ]
+        if tool != Consts.PICKAXE:
             actions.append(Consts.ACTION_PICKAXE)
-        elif Consts.BEE in radar and tool != Consts.SWORD:
+        elif tool != Consts.SWORD:
             actions.append(Consts.ACTION_SWORD)
-        elif Consts.LOG in radar:
-            actions.append(Consts.ACTION_PULL)
-            actions.append(Consts.ACTION_PUSH)
 
         return actions
 
@@ -109,6 +119,10 @@ class Agent:
     @property
     def life_points(self):
         return self.__life_points
+
+    @property
+    def tool(self):
+        return self.__tool
 
     def update_radar(self, radar):
         self.__current_radar = radar

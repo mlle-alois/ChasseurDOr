@@ -58,7 +58,7 @@ class World:
         return self.__agent
 
     def agent_has_won(self):
-        return self.__environment.is_treasure(self.__agent.current_radar[5])
+        return self.__environment.is_agent_on_treasure(self.__agent.current_radar[5])
 
     def update_agent_radar(self, new_radar):
         self.__agent.update_radar(new_radar)
