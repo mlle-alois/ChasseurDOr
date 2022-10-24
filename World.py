@@ -1,3 +1,6 @@
+import Consts
+
+
 class World:
     def __init__(self, agent, environment):
         self.__environment = environment
@@ -7,36 +10,34 @@ class World:
     def reset(self, append_score=True):
         self.__agent.reset(self.__environment.start, append_score)
 
-    def step(self, new_radar):
+    def step(self):
+        env = self.__environment
         action = self.agent.best_action()
-        # tool = self.agent.tool
-        agent_position = self.__agent.current_position()
-        # reward, state, new_tool = self.environment.do(self.agent.current_radar, action, self.__agent.current_radar, tool, new_radar)
+        tool = self.agent.tool
+        # reward, state, new_tool = self.environment.do(self.agent.current_radar, action, tool, new_radar)
 
-    #     move = Consts.ACTION_MOVES[action]
-    #     tool = move[2] if move[2] != 0 else state[2]
-    #     new_state = (state[0] + move[0], state[1] + move[1], tool)
-    #     agent_position = new_state[5]
-    #     reward = Consts.REWARD_DEFAULT
-    #
-    #     if self.is_forbidden_state(agent_position):
-    #         reward = -2 * self.__nb_states
-    #     elif self.is_obstacle(agent_position):
-    #         if self.is_good_tool(agent_position, tool):
-    #             state = new_state
-    #         else:
-    #             reward = -2
-    #     elif self.is_bee(agent_position):
-    #         state = new_state
-    #         if not self.is_good_tool(agent_position, tool):
-    #             reward = -3 * self.__nb_states
-    #     else:
-    #         state = new_state
-    #         if self.is_treasure(agent_position):
-    #             reward = 3 * self.__nb_states
+        agent_move = Consts.ACTION_MOVES[action]
+        # reward = Consts.REWARD_DEFAULT
+        #
+        # if env.is_forbidden_state(agent_position):
+        #     reward = -2 * env.map_size
+        # elif env.is_obstacle(agent_position):
+        #     if env.is_good_tool(agent_position, tool):
+        #         state = new_state
+        #     else:
+        #         reward = -2
+        # elif env.is_bee(agent_position):
+        #     state = new_state
+        #     if not env.is_good_tool(agent_position, tool):
+        #         reward = -3 * env.map_size
+        # else:
+        #     state = new_state
+        #     if env.is_treasure(agent_position):
+        #         reward = 3 * env.map_size
+        #
+        # self.agent.step(reward, state, action, new_radar)
 
-    # self.agent.step(reward, state, action, new_radar)
-    # return action, reward
+        return agent_move
 
     ## c'est dégueu #oui
     def make_learn(self, iterations):

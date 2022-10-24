@@ -41,33 +41,45 @@ class GameView(arcade.View):
 
         for points in self.__world.environment.map_coordinates:
             if self.__world.environment.is_wall(points):
-                sprite = arcade.Sprite(":resources:images/topdown_tanks/treeGreen_large.png", 0.5)
-                sprite.center_x, sprite.center_y = self.state_to_xy(points)
-                sprite.properties['name'] = Consts.MAP_WALL
+                sprite = self.__create_sprite(
+                    ":resources:images/topdown_tanks/treeGreen_large.png",
+                    0.5,
+                    points,
+                    Consts.MAP_WALL
+                )
 
                 self.__walls.append(sprite)
                 self.__all_the_sprites.append(sprite)
 
             elif self.__world.environment.is_rock(points):
-                sprite = arcade.Sprite(":resources:images/tiles/rock.png", 0.25)
-                sprite.center_x, sprite.center_y = self.state_to_xy(points)
-                sprite.properties['name'] = Consts.ROCK
+                sprite = self.__create_sprite(
+                    ":resources:images/tiles/rock.png",
+                    0.25,
+                    points,
+                    Consts.ROCK
+                )
 
                 self.__rock_sprites.append(sprite)
                 self.__all_the_sprites.append(sprite)
 
             elif self.__world.environment.is_log(points):
-                sprite = arcade.Sprite(":resources:images/tiles/boxCrate_single.png", 0.25)
-                sprite.center_x, sprite.center_y = self.state_to_xy(points)
-                sprite.properties['name'] = Consts.LOG
+                sprite = self.__create_sprite(
+                    ":resources:images/tiles/boxCrate_single.png",
+                    0.25,
+                    points,
+                    Consts.LOG
+                )
 
                 self.__log_sprites.append(sprite)
                 self.__all_the_sprites.append(sprite)
 
             elif self.__world.environment.is_river(points):
-                sprite = arcade.Sprite(":resources:images/tiles/water.png", 0.25)
-                sprite.center_x, sprite.center_y = self.state_to_xy(points)
-                sprite.properties['name'] = Consts.RIVER
+                sprite = self.__create_sprite(
+                    ":resources:images/tiles/water.png",
+                    0.25,
+                    points,
+                    Consts.RIVER
+                )
 
                 self.__walls.append(sprite)
                 self.__all_the_sprites.append(sprite)
@@ -82,8 +94,11 @@ class GameView(arcade.View):
 
         position_x = 200
         for pv in range(self.__world.agent.life_points):
-            sprite = arcade.Sprite("pictures/heart.png", 0.05)
-            sprite.center_x, sprite.center_y = position_x, 50
+            sprite = self.__create_sprite(
+                "pictures/heart.png",
+                0.05,
+                (position_x, 50)
+            )
             self.__heart_list.append(sprite)
             position_x += 30
 
@@ -92,24 +107,20 @@ class GameView(arcade.View):
         self.__goal.properties['name'] = Consts.TREASURE
         self.__all_the_sprites.append(self.__goal)
 
-        self.__adventurer = arcade.Sprite(
-            ":resources:images/animated_characters/female_adventurer/femaleAdventurer_walk3.png", 0.3)
-        self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(agent_state)
+        self.__adventurer = self.__create_sprite(
+            ":resources:images/animated_characters/female_adventurer/femaleAdventurer_walk3.png",
+            0.3,
+            agent_state
+        )
 
-        self.__pickaxe = arcade.Sprite(
-            "pictures/pickaxe.png", 0.05)
-        self.__pickaxe.center_x, self.__pickaxe.center_y = self.state_to_xy_tool(agent_state)
+        self.__pickaxe = self.__create_tool_sprite("pictures/pickaxe.png", 0.05, agent_state)
 
-        self.__pickaxe_info = arcade.Sprite(
-            "pictures/pickaxe.png", 0.08)
+        self.__pickaxe_info = arcade.Sprite("pictures/pickaxe.png", 0.08)
         self.__pickaxe_info.center_x, self.__pickaxe_info.center_y = 100, 50
 
-        self.__sword = arcade.Sprite(
-            ":resources:gui_basic_assets/items/sword_gold.png", 0.3)
-        self.__sword.center_x, self.__sword.center_y = self.state_to_xy_tool(agent_state)
+        self.__sword = self.__create_tool_sprite(":resources:gui_basic_assets/items/sword_gold.png", 0.3, agent_state)
 
-        self.__sword_info = arcade.Sprite(
-            ":resources:gui_basic_assets/items/sword_gold.png", 0.6)
+        self.__sword_info = arcade.Sprite(":resources:gui_basic_assets/items/sword_gold.png", 0.6)
         self.__sword_info.center_x, self.__sword_info.center_y = 100, 50
 
     def state_to_xy(self, state):
@@ -184,9 +195,9 @@ class GameView(arcade.View):
             self.window.show_view(game_over_view)
 
         else:
-            self.__world.step(self.__get_radar())
+            agent_move = self.__world.step()
 
-            self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(agent_state)
+            self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(agent_move)
             self.__sword.center_x, self.__sword.center_y = self.state_to_xy_tool(agent_state)
             self.__pickaxe.center_x, self.__pickaxe.center_y = self.state_to_xy_tool(agent_state)
 
@@ -231,3 +242,16 @@ class GameView(arcade.View):
                 radar.append("" if len(points) == 0 else points[0].properties['name'])
 
         return radar
+
+    def __create_sprite(self, picture_path, size, coordinate, token_name=""):
+        sprite = arcade.Sprite(picture_path, size)
+        sprite.center_x, sprite.center_y = self.state_to_xy(coordinate)
+        sprite.properties['name'] = token_name
+
+        return sprite
+
+    def __create_tool_sprite(self, picture_path, size, coordinate):
+        sprite = arcade.Sprite(picture_path, size)
+        sprite.center_x, sprite.center_y = self.state_to_xy_tool(coordinate)
+
+        return sprite

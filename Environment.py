@@ -53,32 +53,6 @@ class Environment:
         return (self.is_rock(point) and tool == Consts.PICKAXE) or \
                (self.is_bee(point) and tool == Consts.SWORD)
 
-
-    # def do(self, state, action, old_radar, new_radar):
-    #     move = Consts.ACTION_MOVES[action]
-    #     tool = move[2] if move[2] != 0 else state[2]
-    #     new_state = (state[0] + move[0], state[1] + move[1], tool)
-    #     agent_position = new_state[5]
-    #     reward = Consts.REWARD_DEFAULT
-    #
-    #     if self.is_forbidden_state(agent_position):
-    #         reward = -2 * self.__nb_states
-    #     elif self.is_obstacle(agent_position):
-    #         if self.is_good_tool(agent_position, tool):
-    #             state = new_state
-    #         else:
-    #             reward = -2
-    #     elif self.is_bee(agent_position):
-    #         state = new_state
-    #         if not self.is_good_tool(agent_position, tool):
-    #             reward = -3 * self.__nb_states
-    #     else:
-    #         state = new_state
-    #         if self.is_treasure(agent_position):
-    #             reward = 3 * self.__nb_states
-    #
-    #     return reward, state
-
     @property
     def start(self):
         return self.__start
@@ -90,6 +64,10 @@ class Environment:
     @property
     def map_coordinates(self):
         return list(self.__map_coordinates.keys())
+
+    @property
+    def map_size(self):
+        return len(self.__map_coordinates)
 
     @property
     def height(self):
