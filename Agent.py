@@ -44,7 +44,6 @@ class Agent:
         return self.__qtable[radar]
 
     def update_qtable(self, radar):
-        print(radar, self.__qtable)
         for i in self.__qtable:
             if self.__qtable[i][0] == radar:
                 return
@@ -56,7 +55,6 @@ class Agent:
             self.__qtable[qtable_size][1][tool] = {}
             for action in self.__available_actions(tool):
                 self.__qtable[qtable_size][1][tool][action] = 0
-        print(self.__qtable)
 
 
     def best_action(self):
@@ -64,9 +62,10 @@ class Agent:
             self.__exploration *= self.__cooling_rate
             return choice(Consts.ACTIONS)
         else:
-            # print(self.__qtable)
-            actions = self.__qtable[self.__current_radar][self.__tool]
-            return max(actions, key=actions.get)
+            for key, value in self.__qtable.items():
+                if value[0] == self.current_radar:
+                    actions = value[1][self.__tool]
+                    return max(actions, key=actions.get)
 
     def __available_actions(self, tool):
         actions = [

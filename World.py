@@ -14,30 +14,29 @@ class World:
         env = self.__environment
         action = self.agent.best_action()
         tool = self.agent.tool
-        # reward, state, new_tool = self.environment.do(self.agent.current_radar, action, tool, new_radar)
 
+        reward = Consts.REWARD_DEFAULT
         agent_move = Consts.ACTION_MOVES[action]
-        # reward = Consts.REWARD_DEFAULT
-        #
-        # if env.is_forbidden_state(agent_position):
-        #     reward = -2 * env.map_size
-        # elif env.is_obstacle(agent_position):
-        #     if env.is_good_tool(agent_position, tool):
-        #         state = new_state
-        #     else:
-        #         reward = -2
-        # elif env.is_bee(agent_position):
-        #     state = new_state
-        #     if not env.is_good_tool(agent_position, tool):
-        #         reward = -3 * env.map_size
-        # else:
-        #     state = new_state
-        #     if env.is_treasure(agent_position):
-        #         reward = 3 * env.map_size
-        #
-        # self.agent.step(reward, state, action, new_radar)
+        agent_position = self.__agent.current_radar[Consts.RADAR_ACTION_INDEX[action]]
 
-        return agent_move
+        if env.is_forbidden_state(agent_position):
+            agent_move = (0, 0)
+            reward = -2 * env.map_size
+        elif env.is_obstacle(agent_position):
+             if env.is_good_tool(agent_position, tool):
+                 agent_move = (0, 0)
+                 reward = -2
+        elif env.is_bee(agent_position):
+            if not env.is_good_tool(agent_position, tool):
+                reward = -3 * env.map_size
+        else:
+            if env.is_treasure(agent_position):
+                reward = 3 * env.map_size
+
+        # TODO activer ?
+        #self.agent.step(reward, state, action, new_radar)
+
+        return agent_move, reward
 
     ## c'est dégueu #oui
     def make_learn(self, iterations):

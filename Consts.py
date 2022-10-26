@@ -16,6 +16,7 @@ MAP_START = '.'
 TREASURE = '$'
 MAP_WALL = '#'
 RIVER = 'M'
+AGENT = 'A'
 ROCK = 'R'
 LOG = 'L'
 BEE = 'B'
@@ -39,19 +40,32 @@ ACTIONS = [
     ACTION_PULL_UP, ACTION_PULL_DOWN, ACTION_PULL_RIGHT, ACTION_PULL_LEFT
 ]
 
-## TODO ajouter push/pull dans toutes les directions ?
+#TODO il est possible que les données ne soient pas bonnes au niveau des -1 (lecture inversée sur la map)
 ACTION_MOVES = {
-    ACTION_UP: (0, 30),
-    ACTION_DOWN: (0, -30),
-    ACTION_LEFT: (-30, 0),
-    ACTION_RIGHT: (30, 0),
-    ACTION_PULL_UP: (0, 30),
-    ACTION_PULL_DOWN: (0, -30),
-    ACTION_PULL_LEFT: (-30, 0),
-    ACTION_PULL_RIGHT: (30, 0),
+    ACTION_UP: (-1, 0),
+    ACTION_DOWN: (1, 0),
+    ACTION_LEFT: (0, -1),
+    ACTION_RIGHT: (0, 1),
+    ACTION_PULL_UP: (-1, 0),
+    ACTION_PULL_DOWN: (1, 0),
+    ACTION_PULL_LEFT: (0, -1),
+    ACTION_PULL_RIGHT: (0, 1),
     ACTION_PICKAXE: (0, 0),
     ACTION_SWORD: (0, 0)
-    ## switch_tool ?
+    ## TODO switch_tool ?
+}
+
+RADAR_ACTION_INDEX = {
+    ACTION_UP: 2,
+    ACTION_DOWN: 8,
+    ACTION_LEFT: 4,
+    ACTION_RIGHT: 6,
+    ACTION_PULL_UP: 2,
+    ACTION_PULL_DOWN: 8,
+    ACTION_PULL_RIGHT: 4,
+    ACTION_PULL_LEFT: 6,
+    ACTION_PICKAXE: 5,
+    ACTION_SWORD: 5
 }
 
 REWARD_DEFAULT = -1

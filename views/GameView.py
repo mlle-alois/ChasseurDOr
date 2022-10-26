@@ -36,9 +36,6 @@ class GameView(arcade.View):
         arcade.set_background_color(arcade.color.AMAZON)
 
     def setup(self):
-        ##garder les coordonnées dans env
-        agent_state = self.__world.agent.current_radar
-
         for points in self.__world.environment.map_coordinates:
             if self.__world.environment.is_wall(points):
                 sprite = self.__create_sprite(
@@ -86,13 +83,24 @@ class GameView(arcade.View):
 
             elif self.__world.environment.is_bee(points):
                 sprite = Bee(":resources:images/enemies/bee.png", 0.25)
-                sprite.center_x, sprite.center_y = self.state_to_xy(points)
+                sprite.center_x, sprite.center_y = self.coordinates_to_xy(points)
                 sprite.properties['name'] = Consts.BEE
 
                 self.__bee_list.append(sprite)
                 self.__all_the_sprites.append(sprite)
+            elif self.__world.environment.is_start(points):
+                self.__adventurer = self.__create_sprite(
+                    ":resources:images/animated_characters/female_adventurer/femaleAdventurer_walk3.png",
+                    0.3,
+                    points,
+                    Consts.AGENT
+                )
+                self.__pickaxe = self.__create_tool_sprite("pictures/pickaxe.png", 0.05, points)
+                self.__sword = self.__create_tool_sprite(":resources:gui_basic_assets/items/sword_gold.png", 0.3, points)
 
         position_x = 200
+
+        #TODO voir pour garder, ça risque de gêner le radar
         for pv in range(self.__world.agent.life_points):
             sprite = self.__create_sprite(
                 "pictures/heart.png",
@@ -104,34 +112,25 @@ class GameView(arcade.View):
             position_x += 30
 
         self.__goal = arcade.Sprite("pictures/tresor.png", 0.07)
-        self.__goal.center_x, self.__goal.center_y = self.state_to_xy(self.__world.environment.treasure)
+        self.__goal.center_x, self.__goal.center_y = self.coordinates_to_xy(self.__world.environment.treasure)
         self.__goal.properties['name'] = Consts.TREASURE
         self.__all_the_sprites.append(self.__goal)
-
-        self.__adventurer = self.__create_sprite(
-            ":resources:images/animated_characters/female_adventurer/femaleAdventurer_walk3.png",
-            0.3,
-            agent_state,
-            "A"
-        )
-
-        self.__pickaxe = self.__create_tool_sprite("pictures/pickaxe.png", 0.05, agent_state)
 
         self.__pickaxe_info = arcade.Sprite("pictures/pickaxe.png", 0.08)
         self.__pickaxe_info.center_x, self.__pickaxe_info.center_y = 100, 50
 
-        self.__sword = self.__create_tool_sprite(":resources:gui_basic_assets/items/sword_gold.png", 0.3, agent_state)
 
         self.__sword_info = arcade.Sprite(":resources:gui_basic_assets/items/sword_gold.png", 0.6)
         self.__sword_info.center_x, self.__sword_info.center_y = 100, 50
 
-    def state_to_xy(self, state):
-        return (state[1] + 0.5) * Consts.SPRITE_SIZE, \
-               (self.__world.environment.height - state[0] - 0.5) * Consts.SPRITE_SIZE
+    def coordinates_to_xy(self, coordinates):
+        print(coordinates)
+        return (coordinates[1] + 0.5) * Consts.SPRITE_SIZE, \
+               (self.__world.environment.height - coordinates[0] - 0.5) * Consts.SPRITE_SIZE
 
-    def state_to_xy_tool(self, state):
-        return (state[1] + 0.9) * Consts.SPRITE_SIZE, \
-               (self.__world.environment.height - state[0] - 0.7) * Consts.SPRITE_SIZE
+    def coordinates_to_xy_tool(self, coordinates):
+        return (coordinates[1] + 0.9) * Consts.SPRITE_SIZE, \
+               (self.__world.environment.height - coordinates[0] - 0.7) * Consts.SPRITE_SIZE
 
     def on_draw(self):
         arcade.start_render()
@@ -173,57 +172,58 @@ class GameView(arcade.View):
     def new_game(self):
         self.__world.reset()
         self.setup()
-        ## Horrible trouver une autre manière de la faire
+        ## TODO Horrible trouver une autre manière de la faire
         self.__world.update_agent_radar(self.__get_radar())
         self.__iteration += 1
 
     def on_update(self, delta_time):
-        radar = self.__get_radar()
-        self.__world.update_agent_radar(radar)
-        agent_state = radar
+         radar = self.__get_radar()
 
-        self.__world.agent.update_qtable(radar)
+         self.__world.update_agent_radar(radar)
+         self.__world.agent.update_qtable(radar)
 
-        if self.__world.agent.is_dead():
-            self.new_game()
-            game_over_view = GameOverView(
-                self, self.__width, self.__height, is_won=False,
-                restart_automatically=Consts.RESTART_AUTOMATICALLY
-            )
-            self.window.show_view(game_over_view)
+         if self.__world.agent.is_dead():
+             self.new_game()
+             game_over_view = GameOverView(
+                 self, self.__width, self.__height, is_won=False,
+                 restart_automatically=Consts.RESTART_AUTOMATICALLY
+             )
+             self.window.show_view(game_over_view)
 
-        elif self.__world.agent_has_won():
-            self.new_game()
-            game_over_view = GameOverView(
-                self, self.__width, self.__height, is_won=True,
-                restart_automatically=Consts.RESTART_AUTOMATICALLY
-            )
-            self.window.show_view(game_over_view)
+         elif self.__world.agent_has_won():
+             self.new_game()
+             game_over_view = GameOverView(
+                 self, self.__width, self.__height, is_won=True,
+                 restart_automatically=Consts.RESTART_AUTOMATICALLY
+             )
+             self.window.show_view(game_over_view)
 
-        else:
-            agent_move = self.__world.step()
+         else:
+             agent_move, reward = self.__world.step()
 
-            self.__adventurer.center_x, self.__adventurer.center_y = self.state_to_xy(agent_move)
-            self.__sword.center_x, self.__sword.center_y = self.state_to_xy_tool(agent_state)
-            self.__pickaxe.center_x, self.__pickaxe.center_y = self.state_to_xy_tool(agent_state)
-
-            self.__rock_sprites.update()
-            self.__bee_list.update()
-            self.__heart_list.update()
-
-            hit_rock_list = arcade.check_for_collision_with_list(self.__adventurer, self.__rock_sprites)
-            hit_bee_list = arcade.check_for_collision_with_list(self.__adventurer, self.__bee_list)
-
-            for rock in hit_rock_list:
-                rock.remove_from_sprite_lists()
-
-            for bee in hit_bee_list:
-                if self.__tool == Consts.SWORD:
-                    bee.remove_from_sprite_lists()
-                else:
-                    self.__world.agent.hurt()
-                    if len(self.__heart_list) > 0:
-                        self.__heart_list[len(self.__heart_list) - 1].remove_from_sprite_lists()
+             #self.__adventurer.center_x, self.__adventurer.center_y = self.coordinates_to_xy(agent_move)
+             self.__adventurer.center_x, self.__adventurer.center_y = self.__adventurer.center_x + agent_move[0], self.__adventurer.center_y + agent_move[1]
+        # TODO réactiver petit à petit
+        #     self.__sword.center_x, self.__sword.center_y = self.coordinates_to_xy_tool(agent_move)
+        #     self.__pickaxe.center_x, self.__pickaxe.center_y = self.coordinates_to_xy_tool(agent_move)
+        #
+        #     self.__rock_sprites.update()
+        #     self.__bee_list.update()
+        #     self.__heart_list.update()
+        #
+        #     hit_rock_list = arcade.check_for_collision_with_list(self.__adventurer, self.__rock_sprites)
+        #     hit_bee_list = arcade.check_for_collision_with_list(self.__adventurer, self.__bee_list)
+        #
+        #     for rock in hit_rock_list:
+        #         rock.remove_from_sprite_lists()
+        #
+        #     for bee in hit_bee_list:
+        #         if self.__tool == Consts.SWORD:
+        #             bee.remove_from_sprite_lists()
+        #         else:
+        #             self.__world.agent.hurt()
+        #             if len(self.__heart_list) > 0:
+        #                 self.__heart_list[len(self.__heart_list) - 1].remove_from_sprite_lists()
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.R:
@@ -265,13 +265,13 @@ class GameView(arcade.View):
 
     def __create_sprite(self, picture_path, size, coordinate, token_name):
         sprite = arcade.Sprite(picture_path, size)
-        sprite.center_x, sprite.center_y = self.state_to_xy(coordinate)
+        sprite.center_x, sprite.center_y = self.coordinates_to_xy(coordinate)
         sprite.properties['name'] = token_name
 
         return sprite
 
     def __create_tool_sprite(self, picture_path, size, coordinate):
         sprite = arcade.Sprite(picture_path, size)
-        sprite.center_x, sprite.center_y = self.state_to_xy_tool(coordinate)
+        sprite.center_x, sprite.center_y = self.coordinates_to_xy_tool(coordinate)
 
         return sprite
