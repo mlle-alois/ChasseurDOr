@@ -224,13 +224,15 @@ class GameView(arcade.View):
                     self.__world.agent.hurt()
                     if len(self.__heart_list) > 0:
                         self.__heart_list[len(self.__heart_list) - 1].remove_from_sprite_lists()
-
-            print("action")
-            print(action)
-            print("agent_move")
-            print(agent_move)
-            time.sleep(2)
-
+            if (reward == -1):
+                print("action")
+                print(action)
+                print("agent_move")
+                print(agent_move)
+                print("======================")
+            else:
+                print('OTHER')
+                print("======================")
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.R:

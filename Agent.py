@@ -29,27 +29,27 @@ class Agent:
     def update_position(self, action):
         self.__position = self.current_radar[Consts.RADAR_ACTION_INDEX[action]]
 
-    def is_on_forbidden_state(self):
-        return self.__position == Consts.MAP_WALL or self.__position == Consts.RIVER
+    def is_on_forbidden_state(self, new_position):
+        return new_position == Consts.MAP_WALL or new_position == Consts.RIVER
 
     def is_on_obstacle(self):
         return self.is_on_rock or self.is_on_log()
 
-    def is_on_bee(self):
-        return self.__position == Consts.BEE
+    def is_on_bee(self, new_position):
+        return new_position == Consts.BEE
 
-    def is_on_rock(self):
-        return self.__position == Consts.ROCK
+    def is_on_rock(self, new_position):
+        return new_position == Consts.ROCK
 
-    def is_on_log(self):
-        return self.__position == Consts.LOG
+    def is_on_log(self, new_position):
+        return new_position == Consts.LOG
 
     def is_on_treasure(self):
         return self.__position == Consts.TREASURE
 
-    def has_good_tool(self):
-        return (self.is_on_rock() and self.__tool == Consts.PICKAXE) or \
-               (self.is_on_bee() and self.__tool == Consts.SWORD)
+    def has_good_tool(self, new_position):
+        return (self.is_on_rock(new_position) and self.__tool == Consts.PICKAXE) or \
+               (self.is_on_bee(new_position) and self.__tool == Consts.SWORD)
 
     def step(self, reward, radar, action):
         actions = self.get_actions_by_radar(radar)

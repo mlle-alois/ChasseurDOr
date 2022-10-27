@@ -17,21 +17,27 @@ class World:
 
         reward = Consts.REWARD_DEFAULT
         agent_move = Consts.ACTION_MOVES[action]
-        self.agent.update_position(action)
+        new_position = self.agent.current_radar[Consts.RADAR_ACTION_INDEX[action]]
 
-        if self.agent.is_on_forbidden_state():
+        print("current_radar")
+        print(self.agent.current_radar)
+        print("RADAR_ACTION_INDEX[action]")
+        print(Consts.RADAR_ACTION_INDEX[action])
+        print("new_position")
+        print(new_position)
+        if self.agent.is_on_forbidden_state(new_position):
             agent_move = (0, 0)
             reward = -2 * env.map_size
             print("forbidden state")
         elif self.agent.is_on_obstacle():
-            if self.agent.has_good_tool():
+            if self.agent.has_good_tool(new_position):
                 agent_move = (0, 0)
                 reward = -2
         elif self.agent.is_on_bee():
-            if not self.agent.has_good_tool():
+            if not self.agent.has_good_tool(new_position):
                 reward = -3 * env.map_size
         else:
-            if self.agent.is_on_treasure():
+            if self.agent.is_on_treasure(new_position):
                 reward = 3 * env.map_size
 
         return agent_move, reward, action
