@@ -15,7 +15,7 @@ class Agent:
         self.__score = 0
         self.__life_points = 5
 
-        self.__position = (0, 0) ##TODO
+        self.__position = None
         self.__qtable = {}
         self.__current_radar = {}
 
@@ -26,12 +26,37 @@ class Agent:
         self.__score = 0
         self.reset_pv()
 
-    ## state devient un radar ?
+    def update_position(self, action):
+        self.__position = self.current_radar[Consts.RADAR_ACTION_INDEX[action]]
+
+    def is_on_forbidden_state(self):
+        return self.__position == Consts.MAP_WALL or self.__position == Consts.RIVER
+
+    def is_on_obstacle(self):
+        return self.is_on_rock or self.is_on_log()
+
+    def is_on_bee(self):
+        return self.__position == Consts.BEE
+
+    def is_on_rock(self):
+        return self.__position == Consts.ROCK
+
+    def is_on_log(self):
+        return self.__position == Consts.LOG
+
+    def is_on_treasure(self):
+        return self.__position == Consts.TREASURE
+
+    def has_good_tool(self):
+        return (self.is_on_rock() and self.__tool == Consts.PICKAXE) or \
+               (self.is_on_bee() and self.__tool == Consts.SWORD)
+
     def step(self, reward, radar, action):
-        ## action qui vaut le plus de points ?
-        max_q = max(self.__qtable[radar].values())
-        self.__qtable[self.current_radar][action] += \
-            self.__alpha * (reward + self.__gamma * max_q - self.__qtable[self.current_radar][action])
+        actions = self.get_actions_by_radar(radar)
+
+        ## action qui vaut le plus de points
+        max_q = max(actions.values())
+        actions[action] += self.__alpha * (reward + self.__gamma * max_q - actions[action])
 
         self.__current_radar = radar
         self.__score += reward
@@ -39,11 +64,13 @@ class Agent:
     def heat(self):
         self.__exploration = 1
 
-    ## Complète la q_table au fur et à mesure
-    def get_qtable(self, radar):
-        return self.__qtable[radar]
+    ## Récupère les actions dans la qtable à partir d'un radar
+    def get_actions_by_radar(self, radar):
+        for i in self.__qtable:
+            if self.__qtable[i][0] == radar:
+                return self.__qtable[i][1][self.__tool]
 
-    def update_qtable(self, radar):
+    def add_radar_to_qtable(self, radar):
         for i in self.__qtable:
             if self.__qtable[i][0] == radar:
                 return
@@ -55,7 +82,6 @@ class Agent:
             self.__qtable[qtable_size][1][tool] = {}
             for action in self.__available_actions(tool):
                 self.__qtable[qtable_size][1][tool][action] = 0
-
 
     def best_action(self):
         if uniform(0, 1) < self.__exploration:

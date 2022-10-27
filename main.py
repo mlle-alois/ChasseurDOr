@@ -34,8 +34,3 @@ if __name__ == '__main__':
     arcade.run()
 
     world.agent.save(Consts.FILE_AGENT)
-
-    # print(agent.score)
-
-    # plt.plot(agent.history)
-    # plt.show()

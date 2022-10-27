@@ -17,35 +17,32 @@ class World:
 
         reward = Consts.REWARD_DEFAULT
         agent_move = Consts.ACTION_MOVES[action]
-        agent_position = self.__agent.current_radar[Consts.RADAR_ACTION_INDEX[action]]
+        self.agent.update_position(action)
 
-        if env.is_forbidden_state(agent_position):
+        if self.agent.is_on_forbidden_state():
             agent_move = (0, 0)
             reward = -2 * env.map_size
-        elif env.is_obstacle(agent_position):
-             if env.is_good_tool(agent_position, tool):
-                 agent_move = (0, 0)
-                 reward = -2
-        elif env.is_bee(agent_position):
-            if not env.is_good_tool(agent_position, tool):
+            print("forbidden state")
+        elif self.agent.is_on_obstacle():
+            if self.agent.has_good_tool():
+                agent_move = (0, 0)
+                reward = -2
+        elif self.agent.is_on_bee():
+            if not self.agent.has_good_tool():
                 reward = -3 * env.map_size
         else:
-            if env.is_treasure(agent_position):
+            if self.agent.is_on_treasure():
                 reward = 3 * env.map_size
 
-        # TODO activer ?
-        #self.agent.step(reward, state, action, new_radar)
-
-        return agent_move, reward
+        return agent_move, reward, action
 
     ## c'est dégueu #oui
     def make_learn(self, iterations):
         for i in range(iterations):
             self.reset()
-            while not self.agent_has_won():
-                print("qsmoldihzldjsghaerfjzmkzdfhjgjhsfmdkenjg")
-                ## TODO
-                # self.step()
+            # while not self.agent_has_won():
+            #     ## TODO
+            #     # self.step()
         self.reset()
 
     @property
@@ -57,7 +54,7 @@ class World:
         return self.__agent
 
     def agent_has_won(self):
-        return self.__environment.is_agent_on_treasure(self.__agent.current_radar[5])
+        return self.agent.is_on_treasure()
 
     def update_agent_radar(self, new_radar):
         self.__agent.update_radar(new_radar)

@@ -29,9 +29,6 @@ class Environment:
     def is_treasure(self, point):
         return (point[0], point[1]) == self.__treasure
 
-    def is_agent_on_treasure(self, radar):
-        return radar == Consts.TREASURE
-
     def is_wall(self, point):
         return self.__map_coordinates[point] == Consts.MAP_WALL
 
@@ -52,10 +49,6 @@ class Environment:
 
     def is_bee(self, point):
         return self.__map_coordinates[point] == Consts.BEE
-
-    def is_good_tool(self, point, tool):
-        return (self.is_rock(point) and tool == Consts.PICKAXE) or \
-               (self.is_bee(point) and tool == Consts.SWORD)
 
     @property
     def start(self):

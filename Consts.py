@@ -12,6 +12,8 @@ MAP = """
 #########################
 """
 
+SPRITE_SIZE = 32
+
 MAP_START = '.'
 TREASURE = '$'
 MAP_WALL = '#'
@@ -40,16 +42,15 @@ ACTIONS = [
     ACTION_PULL_UP, ACTION_PULL_DOWN, ACTION_PULL_RIGHT, ACTION_PULL_LEFT
 ]
 
-#TODO il est possible que les données ne soient pas bonnes au niveau des -1 (lecture inversée sur la map)
 ACTION_MOVES = {
-    ACTION_UP: (-1, 0),
-    ACTION_DOWN: (1, 0),
-    ACTION_LEFT: (0, -1),
-    ACTION_RIGHT: (0, 1),
-    ACTION_PULL_UP: (-1, 0),
-    ACTION_PULL_DOWN: (1, 0),
-    ACTION_PULL_LEFT: (0, -1),
-    ACTION_PULL_RIGHT: (0, 1),
+    ACTION_UP: (0, SPRITE_SIZE),
+    ACTION_DOWN: (0, -SPRITE_SIZE),
+    ACTION_LEFT: (-SPRITE_SIZE, 0),
+    ACTION_RIGHT: (SPRITE_SIZE, 0),
+    ACTION_PULL_UP: (0, SPRITE_SIZE),
+    ACTION_PULL_DOWN: (0, -SPRITE_SIZE),
+    ACTION_PULL_LEFT: (-SPRITE_SIZE, 0),
+    ACTION_PULL_RIGHT: (SPRITE_SIZE, 0),
     ACTION_PICKAXE: (0, 0),
     ACTION_SWORD: (0, 0)
     ## TODO switch_tool ?
@@ -69,8 +70,6 @@ RADAR_ACTION_INDEX = {
 }
 
 REWARD_DEFAULT = -1
-
-SPRITE_SIZE = 32
 
 FILE_AGENT = 'agent.golddigger'
 
