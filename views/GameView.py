@@ -202,11 +202,10 @@ class GameView(arcade.View):
 
             self.__adventurer.center_x, self.__adventurer.center_y = self.__adventurer.center_x + agent_move[0], \
                                                                      self.__adventurer.center_y + agent_move[1]
-            # self.__adventurer.center_x, self.__adventurer.center_y = self.coordinates_to_xy(agent_move)
-
-            ##TODO après agent
-            self.__sword.center_x, self.__sword.center_y = self.coordinates_to_xy_tool(agent_move)
-            self.__pickaxe.center_x, self.__pickaxe.center_y = self.coordinates_to_xy_tool(agent_move)
+            self.__sword.center_x, self.__sword.center_y = self.__sword.center_x + agent_move[0], \
+                                                           self.__sword.center_y + agent_move[1]
+            self.__pickaxe.center_x, self.__pickaxe.center_y = self.__pickaxe.center_x + agent_move[0], \
+                                                               self.__pickaxe.center_y + agent_move[1]
 
             self.__rock_sprites.update()
             self.__bee_list.update()

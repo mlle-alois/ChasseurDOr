@@ -13,7 +13,6 @@ class World:
     def step(self):
         env = self.__environment
         action = self.agent.best_action()
-        tool = self.agent.tool
 
         reward = Consts.REWARD_DEFAULT
         agent_move = Consts.ACTION_MOVES[action]

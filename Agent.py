@@ -4,7 +4,7 @@ from random import *
 
 
 class Agent:
-    def __init__(self, alpha=1, gamma=0.9, exploration=0, cooling_rate=0.1):
+    def __init__(self, alpha=0.8, gamma=0.9, exploration=0, cooling_rate=0.1):
 
         self.__tool = Consts.PICKAXE
         self.__alpha = alpha
@@ -54,6 +54,9 @@ class Agent:
     def step(self, reward, radar, action):
         actions = self.get_actions_by_radar(radar)
 
+        if action == Consts.SWORD or action == Consts.PICKAXE:
+            self.update_tool(action)
+
         ## action qui vaut le plus de points
         max_q = max(actions.values())
         actions[action] += self.__alpha * (reward + self.__gamma * max_q - actions[action])
@@ -86,7 +89,7 @@ class Agent:
     def best_action(self):
         if uniform(0, 1) < self.__exploration:
             self.__exploration *= self.__cooling_rate
-            return choice(Consts.ACTIONS)
+            return choice(self.__available_actions(self.__tool))
         else:
             for key, value in self.__qtable.items():
                 if value[0] == self.current_radar:
@@ -104,6 +107,9 @@ class Agent:
             actions.append(Consts.ACTION_SWORD)
 
         return actions
+
+    def update_tool(self, action):
+        self.__tool = action
 
     def save(self, filename):
         with open(filename, 'wb') as file:
