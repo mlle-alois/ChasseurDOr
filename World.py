@@ -28,26 +28,30 @@ class World:
             agent_move = (0, 0)
             reward = -2 * env.map_size
             print("forbidden state")
-        elif self.agent.is_on_obstacle():
-            if self.agent.has_good_tool(new_position):
+        elif self.agent.is_on_rock(new_position):
+            if not self.agent.has_good_tool(new_position):
                 agent_move = (0, 0)
                 reward = -2
-        elif self.agent.is_on_bee():
+        elif self.agent.is_on_log(new_position):
+            agent_move = (0, 0)
+            reward = -2
+            #TODO vérifier si l'action est possible
+            print('log')
+        elif self.agent.is_on_bee(new_position):
             if not self.agent.has_good_tool(new_position):
                 reward = -3 * env.map_size
         else:
-            if self.agent.is_on_treasure(new_position):
+            if self.agent.is_on_treasure():
                 reward = 3 * env.map_size
 
         return agent_move, reward, action
 
-    ## c'est dégueu #oui
+    ## c'est dégueu
     def make_learn(self, iterations):
         for i in range(iterations):
             self.reset()
-            # while not self.agent_has_won():
-            #     ## TODO
-            #     # self.step()
+            while not self.agent_has_won():
+                self.step()
         self.reset()
 
     @property

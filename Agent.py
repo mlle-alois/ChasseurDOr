@@ -32,8 +32,8 @@ class Agent:
     def is_on_forbidden_state(self, new_position):
         return new_position == Consts.MAP_WALL or new_position == Consts.RIVER
 
-    def is_on_obstacle(self):
-        return self.is_on_rock or self.is_on_log()
+    def is_on_obstacle(self, new_position):
+        return self.is_on_rock(new_position) or self.is_on_log(new_position)
 
     def is_on_bee(self, new_position):
         return new_position == Consts.BEE
