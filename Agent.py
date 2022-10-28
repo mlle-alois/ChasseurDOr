@@ -4,7 +4,7 @@ from random import *
 
 
 class Agent:
-    def __init__(self, alpha=0.8, gamma=0.9, exploration=0, cooling_rate=0.1):
+    def __init__(self, alpha=0.99, gamma=0.9, exploration=0, cooling_rate=0.1):
 
         self.__tool = Consts.PICKAXE
         self.__alpha = alpha
@@ -44,12 +44,16 @@ class Agent:
     def is_on_log(self, new_position):
         return new_position == Consts.LOG
 
-    def is_on_treasure(self):
-        return self.__position == Consts.TREASURE
+    def is_on_treasure(self, new_position):
+        return new_position == Consts.TREASURE
 
     def has_good_tool(self, new_position):
         return (self.is_on_rock(new_position) and self.__tool == Consts.PICKAXE) or \
                (self.is_on_bee(new_position) and self.__tool == Consts.SWORD)
+
+    def can_interact_with_log(self, new_position):
+        #TODO faire évoluer la méthode pour empêcher de pousser s'il y a quelque chose derrière
+        return True
 
     def step(self, reward, radar, action):
         actions = self.get_actions_by_radar(radar)

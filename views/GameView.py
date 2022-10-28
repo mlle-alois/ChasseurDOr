@@ -33,6 +33,7 @@ class GameView(arcade.View):
         arcade.set_background_color(arcade.color.AMAZON)
 
     def setup(self):
+        # TODO voir pourquoi les coeurs apparaissent pas
         self.__bee_list = arcade.SpriteList()
         self.__rock_sprites = arcade.SpriteList()
         self.__log_sprites = arcade.SpriteList()
@@ -188,7 +189,7 @@ class GameView(arcade.View):
             )
             self.window.show_view(game_over_view)
 
-        elif self.__world.agent_has_won():
+        elif self.__world.agent_has_won(radar):
             self.new_game()
             game_over_view = GameOverView(
                 self, self.__width, self.__height, is_won=True,
@@ -199,6 +200,9 @@ class GameView(arcade.View):
         else:
             agent_move, reward, action = self.__world.step()
             self.__world.agent.step(reward, radar, action)
+
+            self.move_log(action, agent_move)
+            #TODO autoriser à passer sur la caisse quand y'a une
 
             self.__adventurer.center_x, self.__adventurer.center_y = self.__adventurer.center_x + agent_move[0], \
                                                                      self.__adventurer.center_y + agent_move[1]
@@ -233,6 +237,33 @@ class GameView(arcade.View):
             else:
                 print('OTHER')
                 print("======================")
+
+    def move_log(self, action, agent_move):
+        points = []
+        if action == Consts.ACTION_PULL_UP or action == Consts.ACTION_DOWN:
+            points = arcade.get_sprites_at_point(
+                (self.__adventurer.center_x, self.__adventurer.center_y - Consts.SPRITE_SIZE),
+                self.__log_sprites
+            )
+        elif action == Consts.ACTION_PULL_DOWN or action == Consts.ACTION_UP:
+            points = arcade.get_sprites_at_point(
+                (self.__adventurer.center_x, self.__adventurer.center_y + Consts.SPRITE_SIZE),
+                self.__log_sprites
+            )
+        elif action == Consts.ACTION_PULL_RIGHT or action == Consts.ACTION_LEFT:
+            points = arcade.get_sprites_at_point(
+                (self.__adventurer.center_x - Consts.SPRITE_SIZE, self.__adventurer.center_y),
+                self.__log_sprites
+            )
+        elif action == Consts.ACTION_PULL_LEFT or action == Consts.ACTION_RIGHT:
+            points = arcade.get_sprites_at_point(
+                (self.__adventurer.center_x + Consts.SPRITE_SIZE, self.__adventurer.center_y),
+                self.__log_sprites
+            )
+
+        if len(points) > 0:
+            points[0].center_x, points[0].center_y = points[0].center_x + agent_move[0], points[0].center_y + \
+                                                     agent_move[1]
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.R:

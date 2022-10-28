@@ -27,21 +27,20 @@ class World:
         if self.agent.is_on_forbidden_state(new_position):
             agent_move = (0, 0)
             reward = -2 * env.map_size
-            print("forbidden state")
         elif self.agent.is_on_rock(new_position):
             if not self.agent.has_good_tool(new_position):
                 agent_move = (0, 0)
                 reward = -2
         elif self.agent.is_on_log(new_position):
-            agent_move = (0, 0)
-            reward = -2
-            #TODO vérifier si l'action est possible
-            print('log')
+            if not self.agent.can_interact_with_log(new_position):
+                agent_move = (0, 0)
+                reward = -2
+            # TODO pousser la caisse si possible
         elif self.agent.is_on_bee(new_position):
             if not self.agent.has_good_tool(new_position):
                 reward = -3 * env.map_size
         else:
-            if self.agent.is_on_treasure():
+            if self.agent.is_on_treasure(new_position):
                 reward = 3 * env.map_size
 
         return agent_move, reward, action
@@ -62,8 +61,8 @@ class World:
     def agent(self):
         return self.__agent
 
-    def agent_has_won(self):
-        return self.agent.is_on_treasure()
+    def agent_has_won(self, radar):
+        return radar[Consts.AGENT_POSITION_IN_RADAR] == Consts.TREASURE
 
     def update_agent_radar(self, new_radar):
         self.__agent.update_radar(new_radar)
