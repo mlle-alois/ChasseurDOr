@@ -17,9 +17,6 @@ class GameView(arcade.View):
         self.__height = height
 
         self.__walls = arcade.SpriteList()
-        self.__rock_sprites = arcade.SpriteList()
-        self.__log_sprites = arcade.SpriteList()
-        self.__bee_list = arcade.SpriteList()
         self.__heart_list = arcade.SpriteList()
         self.__all_the_sprites = arcade.SpriteList()
 
@@ -36,6 +33,10 @@ class GameView(arcade.View):
         arcade.set_background_color(arcade.color.AMAZON)
 
     def setup(self):
+        self.__bee_list = arcade.SpriteList()
+        self.__rock_sprites = arcade.SpriteList()
+        self.__log_sprites = arcade.SpriteList()
+
         for points in self.__world.environment.map_coordinates:
             if self.__world.environment.is_wall(points):
                 sprite = self.__create_sprite(
