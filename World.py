@@ -7,8 +7,8 @@ class World:
         self.__agent = agent
         self.reset(False)
 
-    def reset(self, append_score=True):
-        self.__agent.reset(self.__environment.start, append_score)
+    def reset(self, treasure_radar, append_score=True):
+        self.__agent.reset(self.__environment.start, treasure_radar, append_score)
 
     def step(self):
         env = self.__environment
@@ -64,5 +64,5 @@ class World:
     def agent_has_won(self, radar):
         return radar[Consts.AGENT_POSITION_IN_RADAR] == Consts.TREASURE
 
-    def update_agent_radar(self, new_radar):
-        self.__agent.update_radar(new_radar)
+    def update_agent_radar(self, new_radar, treasure_radar):
+        self.__agent.update_radars(new_radar, treasure_radar)

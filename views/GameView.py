@@ -20,7 +20,7 @@ class GameView(arcade.View):
         self.__heart_list = arcade.SpriteList()
         self.__all_the_sprites = arcade.SpriteList()
 
-        self.__goal = None
+        self.__treasure = None
         self.__adventurer = None
         self.__pickaxe = None
         self.__pickaxe_info = None
@@ -114,10 +114,10 @@ class GameView(arcade.View):
             self.__heart_list.append(sprite)
             position_x += 30
 
-        self.__goal = arcade.Sprite("pictures/tresor.png", 0.07)
-        self.__goal.center_x, self.__goal.center_y = self.coordinates_to_xy(self.__world.environment.treasure)
-        self.__goal.properties['name'] = Consts.TREASURE
-        self.__all_the_sprites.append(self.__goal)
+        self.__treasure = arcade.Sprite("pictures/tresor.png", 0.07)
+        self.__treasure.center_x, self.__treasure.center_y = self.coordinates_to_xy(self.__world.environment.treasure)
+        self.__treasure.properties['name'] = Consts.TREASURE
+        self.__all_the_sprites.append(self.__treasure)
 
         self.__pickaxe_info = arcade.Sprite("pictures/pickaxe.png", 0.08)
         self.__pickaxe_info.center_x, self.__pickaxe_info.center_y = 100, 50
@@ -138,7 +138,7 @@ class GameView(arcade.View):
         self.__walls.draw()
         self.__rock_sprites.draw()
         self.__log_sprites.draw()
-        self.__goal.draw()
+        self.__treasure.draw()
         self.__adventurer.draw()
         self.__bee_list.draw()
         self.__heart_list.draw()
@@ -169,16 +169,16 @@ class GameView(arcade.View):
         )
 
     def new_game(self):
-        self.__world.reset()
+        self.__world.reset(self.__get_treasure_radar())
         self.setup()
         ## TODO Horrible trouver une autre manière de la faire
-        self.__world.update_agent_radar(self.__get_radar())
+        self.__world.update_agent_radar(self.__get_radar(), self.__get_treasure_radar())
         self.__iteration += 1
 
     def on_update(self, delta_time):
         radar = self.__get_radar()
 
-        self.__world.update_agent_radar(radar)
+        self.__world.update_agent_radar(radar, self.__get_treasure_radar())
         self.__world.agent.add_radar_to_qtable(radar)
 
         if self.__world.agent.is_dead():
@@ -199,7 +199,7 @@ class GameView(arcade.View):
 
         else:
             agent_move, reward, action = self.__world.step()
-            self.__world.agent.step(reward, radar, action)
+            self.__world.agent.step(reward, radar, self.__get_treasure_radar(), action)
 
             self.move_log(action, agent_move)
             #TODO autoriser à passer sur la caisse quand y'a une
@@ -302,6 +302,36 @@ class GameView(arcade.View):
                 radar.append("" if len(points) == 0 else points[0].properties['name'])
 
         return radar
+
+    def __get_treasure_radar(self):
+        treasure_radar = []
+
+        for x in range(-30, 31, 30):
+            for y in range(30, -31, -30):
+                treasure_radar.append("")
+
+        treasure_indicator = "X"
+        agent_coordinate_x, agent_coordinate_y = self.__adventurer.center_x, self.__adventurer.center_y
+        treasure_coordinate_x, treasure_coordinate_y = self.__treasure.center_x, self.__treasure.center_y
+
+        if agent_coordinate_y < treasure_coordinate_y and agent_coordinate_x == treasure_coordinate_x:
+            treasure_radar[3] = treasure_indicator
+        elif agent_coordinate_y > treasure_coordinate_y and agent_coordinate_x == treasure_coordinate_x:
+            treasure_radar[5] = treasure_indicator
+        elif agent_coordinate_y == treasure_coordinate_y and agent_coordinate_x > treasure_coordinate_x:
+            treasure_radar[1] = treasure_indicator
+        elif agent_coordinate_y == treasure_coordinate_y and agent_coordinate_x < treasure_coordinate_x:
+            treasure_radar[7] = treasure_indicator
+        elif agent_coordinate_y < treasure_coordinate_y and agent_coordinate_x > treasure_coordinate_x:
+            treasure_radar[0] = treasure_indicator
+        elif agent_coordinate_y < treasure_coordinate_y and agent_coordinate_x < treasure_coordinate_x:
+            treasure_radar[6] = treasure_indicator
+        elif agent_coordinate_y > treasure_coordinate_y and agent_coordinate_x > treasure_coordinate_x:
+            treasure_radar[2] = treasure_indicator
+        elif agent_coordinate_y > treasure_coordinate_y and agent_coordinate_x < treasure_coordinate_x:
+            treasure_radar[8] = treasure_indicator
+
+        return treasure_radar
 
     def __create_sprite(self, picture_path, size, coordinate, token_name):
         sprite = arcade.Sprite(picture_path, size)

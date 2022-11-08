@@ -18,11 +18,13 @@ class Agent:
         self.__position = None
         self.__qtable = {}
         self.__current_radar = {}
+        self.__treasure_radar = {}
 
-    def reset(self, start_state, append_score):
+    def reset(self, start_state, treasure_radar, append_score):
         if append_score:
             self.__history.append(self.__score)
         self.__current_radar = start_state
+        self.__treasure_radar = treasure_radar
         self.__score = 0
         self.reset_pv()
 
@@ -55,7 +57,7 @@ class Agent:
         #TODO faire évoluer la méthode pour empêcher de pousser s'il y a quelque chose derrière
         return True
 
-    def step(self, reward, radar, action):
+    def step(self, reward, radar, treasure_radar, action):
         actions = self.get_actions_by_radar(radar)
 
         if action == Consts.SWORD or action == Consts.PICKAXE:
@@ -66,6 +68,7 @@ class Agent:
         actions[action] += self.__alpha * (reward + self.__gamma * max_q - actions[action])
 
         self.__current_radar = radar
+        self.__treasure_radar = treasure_radar
         self.__score += reward
 
     def heat(self):
@@ -95,9 +98,16 @@ class Agent:
             self.__exploration *= self.__cooling_rate
             return choice(self.__available_actions(self.__tool))
         else:
+            favorites_actions = []
+            for index, value in enumerate(self.__treasure_radar):
+                if value == "X":
+                    favorites_actions = Consts.FAVORITE_ACTIONS_BY_TREASURE_POSITION[index]
             for key, value in self.__qtable.items():
                 if value[0] == self.current_radar:
                     actions = value[1][self.__tool]
+                    for action in favorites_actions:
+                        actions[action] += Consts.FAVORITE_ACTION_BONUS
+                    print(actions)
                     return max(actions, key=actions.get)
 
     def __available_actions(self, tool):
@@ -140,6 +150,10 @@ class Agent:
     def current_radar(self):
         return self.__current_radar
 
+    @property
+    def treasure_radar(self):
+        return self.__treasure_radar
+
     def current_position(self):
         return self.__position
 
@@ -159,8 +173,9 @@ class Agent:
     def tool(self):
         return self.__tool
 
-    def update_radar(self, radar):
+    def update_radars(self, radar, treasure_radar):
         self.__current_radar = radar
+        self.__treasure_radar = treasure_radar
 
     def __repr__(self):
         return str(self.__qtable)
