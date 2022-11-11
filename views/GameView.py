@@ -1,5 +1,3 @@
-import time
-
 import arcade
 
 import Consts
@@ -33,7 +31,6 @@ class GameView(arcade.View):
         arcade.set_background_color(arcade.color.AMAZON)
 
     def setup(self):
-        # TODO voir pourquoi les coeurs apparaissent pas
         self.__bee_list = arcade.SpriteList()
         self.__rock_sprites = arcade.SpriteList()
         self.__log_sprites = arcade.SpriteList()
@@ -103,7 +100,6 @@ class GameView(arcade.View):
 
         position_x = 200
 
-        # TODO voir pour garder, ça risque de gêner le radar
         for pv in range(self.__world.agent.life_points):
             sprite = self.__create_sprite(
                 "pictures/heart.png",
@@ -171,7 +167,6 @@ class GameView(arcade.View):
     def new_game(self):
         self.__world.reset(self.__get_treasure_radar())
         self.setup()
-        ## TODO Horrible trouver une autre manière de la faire
         self.__world.update_agent_radar(self.__get_radar(), self.__get_treasure_radar())
         self.__iteration += 1
 
@@ -202,7 +197,6 @@ class GameView(arcade.View):
             self.__world.agent.step(reward, radar, self.__get_treasure_radar(), action)
 
             self.move_log(action, agent_move)
-            #TODO autoriser à passer sur la caisse quand y'a une
 
             self.__adventurer.center_x, self.__adventurer.center_y = self.__adventurer.center_x + agent_move[0], \
                                                                      self.__adventurer.center_y + agent_move[1]
@@ -228,18 +222,30 @@ class GameView(arcade.View):
                     self.__world.agent.hurt()
                     if len(self.__heart_list) > 0:
                         self.__heart_list[len(self.__heart_list) - 1].remove_from_sprite_lists()
-            if (reward == -1):
+            if reward == -1:
                 print("action")
                 print(action)
                 print("agent_move")
                 print(agent_move)
+                print("radar")
+                print(self.__world.agent.current_radar)
                 print("======================")
             else:
+                print("action")
+                print(action)
+                print("tool")
+                print(self.__world.agent.tool)
+                print("radar")
+                print(self.__world.agent.current_radar)
+                print("agent_move")
+                print(agent_move)
                 print('OTHER')
                 print("======================")
 
     def move_log(self, action, agent_move):
         points = []
+        ## On chercher à récupérer le sprite qu'on bouge -> Le log
+        ## Ici on bouge la caisse en dessous de nous, soit pour la tirer vers le haut, soit pour la pousser vers le bas
         if action == Consts.ACTION_PULL_UP or action == Consts.ACTION_DOWN:
             points = arcade.get_sprites_at_point(
                 (self.__adventurer.center_x, self.__adventurer.center_y - Consts.SPRITE_SIZE),
@@ -274,32 +280,45 @@ class GameView(arcade.View):
             pause = PauseView(self, self.__width, self.__height)
             self.window.show_view(pause)
 
-    ## TODO Radar en flocon
+    ## Radar en flocon
     def __get_radar(self):
         radar = []
 
-        # for w in range(0, 3):
-        #     if w == 0 or w == 2:
-        #         start_index = 30
-        #         end_index = 31
-        #     else:
-        #         start_index = 60
-        #         end_index = 61
-        #
-        #     for x in range(-start_index, end_index, 30):
-        #         for y in range(start_index, -end_index, -30):
-        #             points = arcade.get_sprites_at_point(
-        #                 (self.__adventurer.center_x + x, self.__adventurer.center_y + y),
-        #                 self.__all_the_sprites
-        #             )
-        #             radar.append("" if len(points) == 0 else points[0].properties['name'])
         for x in range(-30, 31, 30):
             for y in range(30, -31, -30):
                 points = arcade.get_sprites_at_point(
                     (self.__adventurer.center_x + x, self.__adventurer.center_y + y),
                     self.__all_the_sprites
                 )
-                radar.append("" if len(points) == 0 else points[0].properties['name'])
+                radar.append(" " if len(points) == 0 else points[0].properties['name'])
+
+        ## Point en haut du radar: index 9
+        points = arcade.get_sprites_at_point(
+            (self.__adventurer.center_x + 0, self.__adventurer.center_y + 60),
+            self.__all_the_sprites
+        )
+        radar.append(" " if len(points) == 0 else points[0].properties['name'])
+
+        ## Point à droite du radar: index 10
+        points = arcade.get_sprites_at_point(
+            (self.__adventurer.center_x + 60, self.__adventurer.center_y + 0),
+            self.__all_the_sprites
+        )
+        radar.append(" " if len(points) == 0 else points[0].properties['name'])
+
+        ## Point en bas du radar: index 11
+        points = arcade.get_sprites_at_point(
+            (self.__adventurer.center_x + 0, self.__adventurer.center_y -60),
+            self.__all_the_sprites
+        )
+        radar.append(" " if len(points) == 0 else points[0].properties['name'])
+
+        ## Point à gauche du radar: index 12
+        points = arcade.get_sprites_at_point(
+            (self.__adventurer.center_x -60, self.__adventurer.center_y + 0),
+            self.__all_the_sprites
+        )
+        radar.append(" " if len(points) == 0 else points[0].properties['name'])
 
         return radar
 

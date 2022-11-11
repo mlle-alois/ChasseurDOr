@@ -16,14 +16,9 @@ class World:
 
         reward = Consts.REWARD_DEFAULT
         agent_move = Consts.ACTION_MOVES[action]
+        ## char genre #, $ ...
         new_position = self.agent.current_radar[Consts.RADAR_ACTION_INDEX[action]]
 
-        print("current_radar")
-        print(self.agent.current_radar)
-        print("RADAR_ACTION_INDEX[action]")
-        print(Consts.RADAR_ACTION_INDEX[action])
-        print("new_position")
-        print(new_position)
         if self.agent.is_on_forbidden_state(new_position):
             agent_move = (0, 0)
             reward = -2 * env.map_size
@@ -31,11 +26,12 @@ class World:
             if not self.agent.has_good_tool(new_position):
                 agent_move = (0, 0)
                 reward = -2
+            else:
+                print("HAS GOOD TOOL ! yay!")
         elif self.agent.is_on_log(new_position):
-            if not self.agent.can_interact_with_log(new_position):
+            if not self.agent.can_interact_with_log(action):
                 agent_move = (0, 0)
                 reward = -2
-            # TODO pousser la caisse si possible
         elif self.agent.is_on_bee(new_position):
             if not self.agent.has_good_tool(new_position):
                 reward = -3 * env.map_size
@@ -45,7 +41,6 @@ class World:
 
         return agent_move, reward, action
 
-    ## c'est dégueu
     def make_learn(self, iterations):
         for i in range(iterations):
             self.reset()

@@ -53,9 +53,33 @@ class Agent:
         return (self.is_on_rock(new_position) and self.__tool == Consts.PICKAXE) or \
                (self.is_on_bee(new_position) and self.__tool == Consts.SWORD)
 
-    def can_interact_with_log(self, new_position):
-        #TODO faire évoluer la méthode pour empêcher de pousser s'il y a quelque chose derrière
-        return True
+    def can_interact_with_log(self, action):
+        ## On vérifie si on peut pousser le log, s'il n y a rien derrière ou de l'eau on peut
+        if action == Consts.ACTION_UP and \
+                (
+                        self.__current_radar[Consts.INDEX_TOP] == Consts.EMPTY or
+                        self.__current_radar[Consts.INDEX_TOP] == Consts.RIVER
+                ):
+            return True
+        elif action == Consts.ACTION_RIGHT and (self.__current_radar[Consts.INDEX_RIGHT] ==
+                                                Consts.EMPTY or self.__current_radar[Consts.INDEX_RIGHT] == Consts.RIVER):
+            return True
+        elif action == Consts.ACTION_DOWN and (self.__current_radar[Consts.INDEX_DOWN] == Consts.EMPTY or self.__current_radar[Consts.INDEX_DOWN] == Consts.RIVER):
+            return True
+        elif action == Consts.ACTION_LEFT and (self.__current_radar[Consts.INDEX_LEFT] == Consts.EMPTY or self.__current_radar[Consts.INDEX_DOWN] == Consts.RIVER):
+            return True
+
+        ## Pour tirer un log on vérifie qu'il n y a rien derrière l'agent
+        elif action == Consts.ACTION_PULL_UP and self.__current_radar[Consts.RADAR_ACTION_INDEX[Consts.ACTION_UP]] == Consts.EMPTY:
+            return True
+        elif action == Consts.ACTION_PULL_RIGHT and self.__current_radar[Consts.RADAR_ACTION_INDEX[Consts.ACTION_RIGHT]] == Consts.EMPTY:
+            return True
+        elif action == Consts.ACTION_PULL_DOWN and self.__current_radar[Consts.RADAR_ACTION_INDEX[Consts.ACTION_DOWN]] == Consts.EMPTY:
+            return True
+        elif action == Consts.ACTION_PULL_LEFT and self.__current_radar[Consts.RADAR_ACTION_INDEX[Consts.ACTION_LEFT]] == Consts.EMPTY:
+            return True
+        else:
+            return False
 
     def step(self, reward, radar, treasure_radar, action):
         actions = self.get_actions_by_radar(radar)
