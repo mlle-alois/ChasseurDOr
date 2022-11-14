@@ -222,25 +222,6 @@ class GameView(arcade.View):
                     self.__world.agent.hurt()
                     if len(self.__heart_list) > 0:
                         self.__heart_list[len(self.__heart_list) - 1].remove_from_sprite_lists()
-            if reward == -1:
-                print("action")
-                print(action)
-                print("agent_move")
-                print(agent_move)
-                print("radar")
-                print(self.__world.agent.current_radar)
-                print("======================")
-            else:
-                print("action")
-                print(action)
-                print("tool")
-                print(self.__world.agent.tool)
-                print("radar")
-                print(self.__world.agent.current_radar)
-                print("agent_move")
-                print(agent_move)
-                print('OTHER')
-                print("======================")
 
     def move_log(self, action, agent_move):
         points = []

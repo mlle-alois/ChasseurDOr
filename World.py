@@ -16,7 +16,7 @@ class World:
 
         reward = Consts.REWARD_DEFAULT
         agent_move = Consts.ACTION_MOVES[action]
-        ## char genre #, $ ...
+        ## char comme #, $ ...
         new_position = self.agent.current_radar[Consts.RADAR_ACTION_INDEX[action]]
 
         if self.agent.is_on_forbidden_state(new_position):
@@ -26,8 +26,6 @@ class World:
             if not self.agent.has_good_tool(new_position):
                 agent_move = (0, 0)
                 reward = -2
-            else:
-                print("HAS GOOD TOOL ! yay!")
         elif self.agent.is_on_log(new_position):
             if not self.agent.can_interact_with_log(action):
                 agent_move = (0, 0)

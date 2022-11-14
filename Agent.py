@@ -131,7 +131,6 @@ class Agent:
                     actions = value[1][self.__tool]
                     for action in favorites_actions:
                         actions[action] += Consts.FAVORITE_ACTION_BONUS
-                    print(actions)
                     return max(actions, key=actions.get)
 
     def __available_actions(self, tool):
