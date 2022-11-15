@@ -69,7 +69,6 @@ class Environment:
                 state = new_state
             else:
                 reward = -2
-        # TODO problème l'abeille est en mouvement, cette méthode n'est plus valable
         elif self.is_bee(new_state):
             state = new_state
             if not self.is_good_tool(new_state, tool):

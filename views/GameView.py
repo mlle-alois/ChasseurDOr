@@ -173,8 +173,6 @@ class GameView(arcade.View):
             for rock in hit_rock_list:
                 rock.remove_from_sprite_lists()
 
-            # TODO problème il y a 2 dans la hit list donc on enlève toujours 2 points de vie au lieu de 1
-            #  + quand le personnage est déjà mort une fois il meurt super vite (en 1 coup ?)
             for bee in hit_bee_list:
                 if self.__tool == Consts.SWORD:
                     bee.remove_from_sprite_lists()
