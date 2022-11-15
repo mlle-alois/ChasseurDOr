@@ -4,6 +4,7 @@ import Consts
 from Bee import Bee
 from views.GameOverView import GameOverView
 from views.PauseView import PauseView
+from utils.RadarUtils import *
 
 
 class GameView(arcade.View):
@@ -289,14 +290,14 @@ class GameView(arcade.View):
 
         ## Point en bas du radar: index 11
         points = arcade.get_sprites_at_point(
-            (self.__adventurer.center_x + 0, self.__adventurer.center_y -60),
+            (self.__adventurer.center_x + 0, self.__adventurer.center_y - 60),
             self.__all_the_sprites
         )
         radar.append(" " if len(points) == 0 else points[0].properties['name'])
 
         ## Point à gauche du radar: index 12
         points = arcade.get_sprites_at_point(
-            (self.__adventurer.center_x -60, self.__adventurer.center_y + 0),
+            (self.__adventurer.center_x - 60, self.__adventurer.center_y + 0),
             self.__all_the_sprites
         )
         radar.append(" " if len(points) == 0 else points[0].properties['name'])
@@ -310,26 +311,22 @@ class GameView(arcade.View):
             for y in range(30, -31, -30):
                 treasure_radar.append("")
 
-        treasure_indicator = "X"
-        agent_coordinate_x, agent_coordinate_y = self.__adventurer.center_x, self.__adventurer.center_y
-        treasure_coordinate_x, treasure_coordinate_y = self.__treasure.center_x, self.__treasure.center_y
-
-        if agent_coordinate_y < treasure_coordinate_y and agent_coordinate_x == treasure_coordinate_x:
-            treasure_radar[3] = treasure_indicator
-        elif agent_coordinate_y > treasure_coordinate_y and agent_coordinate_x == treasure_coordinate_x:
-            treasure_radar[5] = treasure_indicator
-        elif agent_coordinate_y == treasure_coordinate_y and agent_coordinate_x > treasure_coordinate_x:
-            treasure_radar[1] = treasure_indicator
-        elif agent_coordinate_y == treasure_coordinate_y and agent_coordinate_x < treasure_coordinate_x:
-            treasure_radar[7] = treasure_indicator
-        elif agent_coordinate_y < treasure_coordinate_y and agent_coordinate_x > treasure_coordinate_x:
-            treasure_radar[0] = treasure_indicator
-        elif agent_coordinate_y < treasure_coordinate_y and agent_coordinate_x < treasure_coordinate_x:
-            treasure_radar[6] = treasure_indicator
-        elif agent_coordinate_y > treasure_coordinate_y and agent_coordinate_x > treasure_coordinate_x:
-            treasure_radar[2] = treasure_indicator
-        elif agent_coordinate_y > treasure_coordinate_y and agent_coordinate_x < treasure_coordinate_x:
-            treasure_radar[8] = treasure_indicator
+        if is_treasure_above_agent(self.__adventurer, self.__treasure):
+            treasure_radar[3] = Consts.TREASURE_INDICATOR
+        elif is_treasure_under_agent(self.__adventurer, self.__treasure):
+            treasure_radar[5] = Consts.TREASURE_INDICATOR
+        elif is_treasure_left_to_agent(self.__adventurer, self.__treasure):
+            treasure_radar[1] = Consts.TREASURE_INDICATOR
+        elif is_treasure_right_to_agent(self.__adventurer, self.__treasure):
+            treasure_radar[7] = Consts.TREASURE_INDICATOR
+        elif is_treasure_diagonal_up_left_to_agent(self.__adventurer, self.__treasure):
+            treasure_radar[0] = Consts.TREASURE_INDICATOR
+        elif is_treasure_diagonal_up_right_to_agent(self.__adventurer, self.__treasure):
+            treasure_radar[6] = Consts.TREASURE_INDICATOR
+        elif is_treasure_diagonal_down_left_to_agent(self.__adventurer, self.__treasure):
+            treasure_radar[2] = Consts.TREASURE_INDICATOR
+        elif is_treasure_diagonal_down_right_to_agent(self.__adventurer, self.__treasure):
+            treasure_radar[8] = Consts.TREASURE_INDICATOR
 
         return treasure_radar
 
