@@ -4,6 +4,7 @@ import Consts
 from Bee import Bee
 from views.GameOverView import GameOverView
 from views.PauseView import PauseView
+from views.CommandsView import CommandsView
 from utils.RadarUtils import *
 
 
@@ -148,7 +149,7 @@ class GameView(arcade.View):
             self.__sword_info.draw()
 
         arcade.draw_text(
-            "Press Esc. to pause",
+            "Press Esc. to pause / C to see commands",
             self.__width / 2,
             self.__height - 25,
             arcade.color.WHITE,
@@ -260,6 +261,9 @@ class GameView(arcade.View):
             self.__world.agent.heat()
         elif key == arcade.key.ESCAPE:
             pause = PauseView(self, self.__width, self.__height)
+            self.window.show_view(pause)
+        elif key == arcade.key.C:
+            pause = CommandsView(self, self.__width, self.__height)
             self.window.show_view(pause)
 
     ## Radar en flocon
