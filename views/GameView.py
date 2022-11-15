@@ -104,12 +104,9 @@ class GameView(arcade.View):
         position_x = 200
 
         for pv in range(self.__world.agent.life_points):
-            sprite = self.__create_sprite(
-                "pictures/heart.png",
-                0.05,
-                (position_x, 50),
-                ""
-            )
+            sprite = arcade.Sprite("pictures/heart.png", 0.05)
+            sprite.center_x, sprite.center_y = (position_x, 50)
+
             self.__heart_list.append(sprite)
             position_x += 30
 
