@@ -304,7 +304,7 @@ class GameView(arcade.View):
             self.__move(Consts.ACTION_PULL_RIGHT)
         elif key == arcade.key.Q:
             self.__move(Consts.ACTION_PULL_LEFT)
-        elif key == arcade.key.S:
+        elif key == arcade.key.T:
             action = Consts.ACTION_PICKAXE
             if self.__world.agent.tool == Consts.PICKAXE:
                 action = Consts.ACTION_SWORD

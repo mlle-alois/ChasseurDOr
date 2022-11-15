@@ -31,7 +31,7 @@ class CommandsView(arcade.View):
                          font_size=15,
                          anchor_x="center")
 
-        arcade.draw_text("SWITCH TOOL -> S",
+        arcade.draw_text("SWITCH TOOL -> T",
                          self.__width / 2,
                          self.__height - 160,
                          arcade.color.BLACK,
