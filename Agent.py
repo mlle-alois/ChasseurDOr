@@ -49,34 +49,25 @@ class Agent:
     def is_on_treasure(self, new_position):
         return new_position == Consts.TREASURE
 
+    def is_allowed_to_log(self, index):
+        return self.__current_radar[index] == Consts.EMPTY or self.__current_radar[index] == Consts.RIVER
+
+    def agent_has_nothing_behind_him(self, index):
+        return self.__current_radar[Consts.RADAR_ACTION_INDEX[index]] == Consts.EMPTY
+
     def has_good_tool(self, new_position):
         return (self.is_on_rock(new_position) and self.__tool == Consts.PICKAXE) or \
                (self.is_on_bee(new_position) and self.__tool == Consts.SWORD)
 
     def can_interact_with_log(self, action):
-        ## On vérifie si on peut pousser le log, s'il n y a rien derrière ou de l'eau on peut
-        if action == Consts.ACTION_UP and \
-                (
-                        self.__current_radar[Consts.INDEX_TOP] == Consts.EMPTY or
-                        self.__current_radar[Consts.INDEX_TOP] == Consts.RIVER
-                ):
-            return True
-        elif action == Consts.ACTION_RIGHT and (self.__current_radar[Consts.INDEX_RIGHT] ==
-                                                Consts.EMPTY or self.__current_radar[Consts.INDEX_RIGHT] == Consts.RIVER):
-            return True
-        elif action == Consts.ACTION_DOWN and (self.__current_radar[Consts.INDEX_DOWN] == Consts.EMPTY or self.__current_radar[Consts.INDEX_DOWN] == Consts.RIVER):
-            return True
-        elif action == Consts.ACTION_LEFT and (self.__current_radar[Consts.INDEX_LEFT] == Consts.EMPTY or self.__current_radar[Consts.INDEX_DOWN] == Consts.RIVER):
-            return True
-
-        ## Pour tirer un log on vérifie qu'il n y a rien derrière l'agent
-        elif action == Consts.ACTION_PULL_UP and self.__current_radar[Consts.RADAR_ACTION_INDEX[Consts.ACTION_UP]] == Consts.EMPTY:
-            return True
-        elif action == Consts.ACTION_PULL_RIGHT and self.__current_radar[Consts.RADAR_ACTION_INDEX[Consts.ACTION_RIGHT]] == Consts.EMPTY:
-            return True
-        elif action == Consts.ACTION_PULL_DOWN and self.__current_radar[Consts.RADAR_ACTION_INDEX[Consts.ACTION_DOWN]] == Consts.EMPTY:
-            return True
-        elif action == Consts.ACTION_PULL_LEFT and self.__current_radar[Consts.RADAR_ACTION_INDEX[Consts.ACTION_LEFT]] == Consts.EMPTY:
+        if (action == Consts.ACTION_UP and self.is_allowed_to_log(Consts.INDEX_TOP)) or \
+                (action == Consts.ACTION_RIGHT and self.is_allowed_to_log(Consts.INDEX_RIGHT)) or \
+                (action == Consts.ACTION_DOWN and self.is_allowed_to_log(Consts.INDEX_DOWN)) or \
+                (action == Consts.ACTION_LEFT and self.is_allowed_to_log(Consts.INDEX_LEFT)) or \
+                (action == Consts.ACTION_PULL_UP and self.agent_has_nothing_behind_him(Consts.ACTION_UP)) or \
+                (action == Consts.ACTION_PULL_RIGHT and self.agent_has_nothing_behind_him(Consts.ACTION_RIGHT)) or \
+                (action == Consts.ACTION_PULL_DOWN and self.agent_has_nothing_behind_him(Consts.ACTION_DOWN)) or \
+                (action == Consts.ACTION_PULL_LEFT and self.agent_has_nothing_behind_him(Consts.ACTION_LEFT)):
             return True
         else:
             return False
