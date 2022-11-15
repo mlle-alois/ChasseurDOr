@@ -20,10 +20,9 @@ class Agent:
         self.__current_radar = {}
         self.__treasure_radar = {}
 
-    def reset(self, start_state, treasure_radar, append_score):
+    def reset(self, treasure_radar, append_score):
         if append_score:
             self.__history.append(self.__score)
-        self.__current_radar = start_state
         self.__treasure_radar = treasure_radar
         self.__score = 0
         self.reset_pv()
@@ -78,7 +77,7 @@ class Agent:
         if action == Consts.SWORD or action == Consts.PICKAXE:
             self.update_tool(action)
 
-        ## action qui vaut le plus de points
+        # Action qui vaut le plus de points
         max_q = max(actions.values())
         actions[action] += self.__alpha * (reward + self.__gamma * max_q - actions[action])
 
@@ -89,7 +88,7 @@ class Agent:
     def heat(self):
         self.__exploration = 1
 
-    ## Récupère les actions dans la qtable à partir d'un radar
+    # Récupère les actions dans la qtable à partir d'un radar
     def get_actions_by_radar(self, radar):
         for i in self.__qtable:
             if self.__qtable[i][0] == radar:

@@ -8,7 +8,10 @@ class World:
         self.reset(False)
 
     def reset(self, treasure_radar, append_score=True):
-        self.__agent.reset(self.__environment.start, treasure_radar, append_score)
+        self.__agent.reset(
+            treasure_radar,
+            append_score
+        )
 
     def step(self, action):
         env = self.__environment

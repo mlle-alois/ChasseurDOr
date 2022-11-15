@@ -19,7 +19,10 @@ class GameView(arcade.View):
 
         self.__walls = arcade.SpriteList()
         self.__heart_list = arcade.SpriteList()
-        self.__all_the_sprites = arcade.SpriteList()
+        self.__all_the_sprites = None
+        self.__bee_list = None
+        self.__rock_sprites = None
+        self.__log_sprites = None
 
         self.__treasure = None
         self.__adventurer = None
@@ -37,6 +40,7 @@ class GameView(arcade.View):
         self.__bee_list = arcade.SpriteList()
         self.__rock_sprites = arcade.SpriteList()
         self.__log_sprites = arcade.SpriteList()
+        self.__all_the_sprites = arcade.SpriteList()
 
         for points in self.__world.environment.map_coordinates:
             if self.__world.environment.is_wall(points):
@@ -194,11 +198,13 @@ class GameView(arcade.View):
 
         else:
             if not self.__play_mode:
-                agent_move, reward, action = self.__world.step(None)
-                self.__world.agent.step(reward, radar, self.__get_treasure_radar(), action)
-                self.__step(action, agent_move)
+                self.__step(None, radar)
 
-    def __step(self, action, agent_move):
+    def __step(self, action, radar):
+        agent_move, reward, action = self.__world.step(action)
+
+        self.__world.agent.step(reward, radar, self.__get_treasure_radar(), action)
+
         self.move_log(action, agent_move)
 
         self.__adventurer.center_x, self.__adventurer.center_y = self.__adventurer.center_x + agent_move[0], \
@@ -215,7 +221,7 @@ class GameView(arcade.View):
 
     def move_log(self, action, agent_move):
         points = []
-        # On chercher à récupérer le sprite qu'on bouge -> Le log
+        # On cherche à récupérer le sprite qu'on bouge -> Le log
         # Ici on bouge la caisse en dessous de nous, soit pour la tirer vers le haut, soit pour la pousser vers le bas
         if action == Consts.ACTION_PULL_UP or action == Consts.ACTION_DOWN:
             points = arcade.get_sprites_at_point(
@@ -268,7 +274,7 @@ class GameView(arcade.View):
                                                        self.__pickaxe.center_y + agent_move[1]
 
     def on_key_press(self, key, modifiers):
-
+        radar = self.__get_radar()
         if key == arcade.key.R:
             self.new_game()
         elif key == arcade.key.H:
@@ -286,26 +292,26 @@ class GameView(arcade.View):
 
         # MODE JEU
         elif key == arcade.key.UP:
-            self.__move(Consts.ACTION_UP)
+            self.__step(Consts.ACTION_UP, radar)
         elif key == arcade.key.DOWN:
-            self.__move(Consts.ACTION_DOWN)
+            self.__step(Consts.ACTION_DOWN, radar)
         elif key == arcade.key.RIGHT:
-            self.__move(Consts.ACTION_RIGHT)
+            self.__step(Consts.ACTION_RIGHT, radar)
         elif key == arcade.key.LEFT:
-            self.__move(Consts.ACTION_LEFT)
+            self.__step(Consts.ACTION_LEFT, radar)
         elif key == arcade.key.Z:
-            self.__move(Consts.ACTION_PULL_UP)
+            self.__step(Consts.ACTION_PULL_UP, radar)
         elif key == arcade.key.S:
-            self.__move(Consts.ACTION_PULL_DOWN)
+            self.__step(Consts.ACTION_PULL_DOWN, radar)
         elif key == arcade.key.D:
-            self.__move(Consts.ACTION_PULL_RIGHT)
+            self.__step(Consts.ACTION_PULL_RIGHT, radar)
         elif key == arcade.key.Q:
-            self.__move(Consts.ACTION_PULL_LEFT)
+            self.__step(Consts.ACTION_PULL_LEFT, radar)
         elif key == arcade.key.T:
             action = Consts.ACTION_PICKAXE
             if self.__world.agent.tool == Consts.PICKAXE:
                 action = Consts.ACTION_SWORD
-            self.__move(action)
+            self.__step(action, radar)
 
     # Radar en flocon
     def __get_radar(self):
@@ -348,12 +354,6 @@ class GameView(arcade.View):
         radar.append(" " if len(points) == 0 else points[0].properties['name'])
 
         return radar
-
-    def __move(self, action):
-        radar = self.__get_radar()
-        agent_move, reward, action = self.__world.step(action)
-        self.__world.agent.step(reward, radar, self.__get_treasure_radar(), action)
-        self.__step(action, agent_move)
 
     def __get_treasure_radar(self):
         treasure_radar = []
