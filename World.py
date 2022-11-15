@@ -39,13 +39,6 @@ class World:
 
         return agent_move, reward, action
 
-    def make_learn(self, iterations):
-        for i in range(iterations):
-            self.reset()
-            while not self.agent_has_won():
-                self.step()
-        self.reset()
-
     @property
     def environment(self):
         return self.__environment
