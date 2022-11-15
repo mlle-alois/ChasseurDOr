@@ -21,7 +21,7 @@ def extract_history(history):
 if __name__ == '__main__':
 
     world = World(Agent(), Environment(Consts.MAP))
-    world.make_learn(0)
+    world.make_learn(10)
 
     if os.path.exists(Consts.FILE_AGENT):
         world.agent.load(Consts.FILE_AGENT)
@@ -36,7 +36,5 @@ if __name__ == '__main__':
 
     world.agent.save(Consts.FILE_AGENT)
 
-    # print(agent.score)
-
-    # plt.plot(agent.history)
-    # plt.show()
+    plt.plot(world.agent.history)
+    plt.show()

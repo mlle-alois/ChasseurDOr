@@ -14,12 +14,6 @@ class GameView(arcade.View):
         self.__width = width
         self.__height = height
 
-        self.__walls = arcade.SpriteList()
-        self.__rock_sprites = arcade.SpriteList()
-        self.__log_sprites = arcade.SpriteList()
-        self.__bee_list = arcade.SpriteList()
-        self.__heart_list = arcade.SpriteList()
-
         self.__goal = None
         self.__adventurer = None
         self.__pickaxe = None
@@ -35,6 +29,12 @@ class GameView(arcade.View):
         arcade.set_background_color(arcade.color.AMAZON)
 
     def setup(self):
+        self.__walls = arcade.SpriteList()
+        self.__rock_sprites = arcade.SpriteList()
+        self.__log_sprites = arcade.SpriteList()
+        self.__bee_list = arcade.SpriteList()
+        self.__heart_list = arcade.SpriteList()
+
         agent_state = self.__world.agent.state
 
         for state in self.__world.environment.states:
