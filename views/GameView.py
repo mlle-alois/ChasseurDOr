@@ -9,12 +9,13 @@ from utils.RadarUtils import *
 
 
 class GameView(arcade.View):
-    def __init__(self, world, width, height):
+    def __init__(self, world, width, height, play_mode: bool):
         super().__init__()
 
         self.__world = world
         self.__width = width
         self.__height = height
+        self.__play_mode = play_mode
 
         self.__walls = arcade.SpriteList()
         self.__heart_list = arcade.SpriteList()
@@ -195,40 +196,30 @@ class GameView(arcade.View):
             self.window.show_view(game_over_view)
 
         else:
-            agent_move, reward, action = self.__world.step()
-            self.__world.agent.step(reward, radar, self.__get_treasure_radar(), action)
+            if not self.__play_mode:
+                agent_move, reward, action = self.__world.step(None)
+                self.__world.agent.step(reward, radar, self.__get_treasure_radar(), action)
+                self.__step(action, agent_move)
 
-            self.move_log(action, agent_move)
+    def __step(self, action, agent_move):
+        self.move_log(action, agent_move)
 
-            self.__adventurer.center_x, self.__adventurer.center_y = self.__adventurer.center_x + agent_move[0], \
-                                                                     self.__adventurer.center_y + agent_move[1]
-            self.__sword.center_x, self.__sword.center_y = self.__sword.center_x + agent_move[0], \
-                                                           self.__sword.center_y + agent_move[1]
-            self.__pickaxe.center_x, self.__pickaxe.center_y = self.__pickaxe.center_x + agent_move[0], \
-                                                               self.__pickaxe.center_y + agent_move[1]
+        self.__adventurer.center_x, self.__adventurer.center_y = self.__adventurer.center_x + agent_move[0], \
+                                                                 self.__adventurer.center_y + agent_move[1]
 
-            self.__rock_sprites.update()
-            self.__bee_list.update()
-            self.__heart_list.update()
+        self.__move_tool_sprite(agent_move)
 
-            hit_rock_list = arcade.check_for_collision_with_list(self.__adventurer, self.__rock_sprites)
-            hit_bee_list = arcade.check_for_collision_with_list(self.__adventurer, self.__bee_list)
+        self.__rock_sprites.update()
+        self.__bee_list.update()
+        self.__heart_list.update()
 
-            for rock in hit_rock_list:
-                rock.remove_from_sprite_lists()
-
-            for bee in hit_bee_list:
-                if self.__world.agent.tool == Consts.SWORD:
-                    bee.remove_from_sprite_lists()
-                else:
-                    self.__world.agent.hurt()
-                    if len(self.__heart_list) > 0:
-                        self.__heart_list[len(self.__heart_list) - 1].remove_from_sprite_lists()
+        self.__remove_rock_sprite()
+        self.__remove_bee_sprite()
 
     def move_log(self, action, agent_move):
         points = []
-        ## On chercher à récupérer le sprite qu'on bouge -> Le log
-        ## Ici on bouge la caisse en dessous de nous, soit pour la tirer vers le haut, soit pour la pousser vers le bas
+        # On chercher à récupérer le sprite qu'on bouge -> Le log
+        # Ici on bouge la caisse en dessous de nous, soit pour la tirer vers le haut, soit pour la pousser vers le bas
         if action == Consts.ACTION_PULL_UP or action == Consts.ACTION_DOWN:
             points = arcade.get_sprites_at_point(
                 (self.__adventurer.center_x, self.__adventurer.center_y - Consts.SPRITE_SIZE),
@@ -254,7 +245,33 @@ class GameView(arcade.View):
             points[0].center_x, points[0].center_y = points[0].center_x + agent_move[0], points[0].center_y + \
                                                      agent_move[1]
 
+    # Supprime les sprites rocher sur lesquel l'aventurier est
+    def __remove_rock_sprite(self):
+        hit_rock_list = arcade.check_for_collision_with_list(self.__adventurer, self.__rock_sprites)
+
+        for rock in hit_rock_list:
+            rock.remove_from_sprite_lists()
+
+    # Supprime les sprites abeilles que l'aventurier a tué
+    def __remove_bee_sprite(self):
+        hit_bee_list = arcade.check_for_collision_with_list(self.__adventurer, self.__bee_list)
+
+        for bee in hit_bee_list:
+            if self.__world.agent.tool == Consts.SWORD:
+                bee.remove_from_sprite_lists()
+                continue
+            self.__world.agent.hurt()
+            if len(self.__heart_list) > 0:
+                self.__heart_list[len(self.__heart_list) - 1].remove_from_sprite_lists()
+
+    def __move_tool_sprite(self, agent_move):
+        self.__sword.center_x, self.__sword.center_y = self.__sword.center_x + agent_move[0], \
+                                                       self.__sword.center_y + agent_move[1]
+        self.__pickaxe.center_x, self.__pickaxe.center_y = self.__pickaxe.center_x + agent_move[0], \
+                                                       self.__pickaxe.center_y + agent_move[1]
+
     def on_key_press(self, key, modifiers):
+
         if key == arcade.key.R:
             self.new_game()
         elif key == arcade.key.H:
@@ -266,7 +283,34 @@ class GameView(arcade.View):
             pause = CommandsView(self, self.__width, self.__height)
             self.window.show_view(pause)
 
-    ## Radar en flocon
+        # Change le mode de jeu (test ou jouable)
+        elif key == arcade.key.P:
+            self.__play_mode = not self.__play_mode
+
+        # MODE JEU
+        elif key == arcade.key.UP:
+            self.__move(Consts.ACTION_UP)
+        elif key == arcade.key.DOWN:
+            self.__move(Consts.ACTION_DOWN)
+        elif key == arcade.key.RIGHT:
+            self.__move(Consts.ACTION_RIGHT)
+        elif key == arcade.key.LEFT:
+            self.__move(Consts.ACTION_LEFT)
+        elif key == arcade.key.Z:
+            self.__move(Consts.ACTION_PULL_UP)
+        elif key == arcade.key.S:
+            self.__move(Consts.ACTION_PULL_DOWN)
+        elif key == arcade.key.D:
+            self.__move(Consts.ACTION_PULL_RIGHT)
+        elif key == arcade.key.Q:
+            self.__move(Consts.ACTION_PULL_LEFT)
+        elif key == arcade.key.S:
+            action = Consts.ACTION_PICKAXE
+            if self.__world.agent.tool == Consts.PICKAXE:
+                action = Consts.ACTION_SWORD
+            self.__move(action)
+
+    # Radar en flocon
     def __get_radar(self):
         radar = []
 
@@ -307,6 +351,12 @@ class GameView(arcade.View):
         radar.append(" " if len(points) == 0 else points[0].properties['name'])
 
         return radar
+
+    def __move(self, action):
+        radar = self.__get_radar()
+        agent_move, reward, action = self.__world.step(action)
+        self.__world.agent.step(reward, radar, self.__get_treasure_radar(), action)
+        self.__step(action, agent_move)
 
     def __get_treasure_radar(self):
         treasure_radar = []
